@@ -58,7 +58,7 @@ class FastAdapterDataProvider<Itm: Item>: FastAdapterDataProviderWrapper {
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if let item = fastAdapter?.adapter?.itemList.get(position: indexPath.row) {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: item.getType(), for: indexPath)
-            item.arrangement?.makeViews(in: cell.contentView)
+            item.makeViews(in: cell.contentView)
             return cell
         }
         // Last resort, should never happen

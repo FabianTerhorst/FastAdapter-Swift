@@ -12,6 +12,9 @@ import protocol LayoutKit.Layout
 open class Item {
     var arrangement: LayoutArrangement?
     
+    // Needed for animation
+    //weak var contentView: UIView?
+    
     open func getType() -> String {
         return String(describing: type(of: self))
     }
@@ -30,8 +33,20 @@ open class Item {
 }
 
 extension Item {
-    public func arrangement(width: CGFloat?, height: CGFloat?) -> LayoutArrangement? {
+    func arrangement(width: CGFloat?, height: CGFloat?) -> LayoutArrangement? {
         arrangement = getLayout()?.arrangement(width: width, height: height)
         return arrangement
+    }
+    
+    func makeViews(in view: UIView) {
+        /*if let contentView = contentView {
+            if let animation = arrangement?.prepareAnimation(for: contentView) {
+                UIView.animate(withDuration: 5.0, animations: animation.apply, completion: { (_) in
+                })
+            }
+        } else {*/
+        arrangement?.makeViews(in: view)
+        //}
+        //contentView = view
     }
 }

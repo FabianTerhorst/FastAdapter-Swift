@@ -9,7 +9,7 @@
 public class ItemList<Itm: Item> {
     weak var fastAdapter: FastAdapter<Itm>?
     
-    private var items = [Itm]()
+    var items = [Itm]()
     
     public var count: Int {
         get {
@@ -26,7 +26,7 @@ public class ItemList<Itm: Item> {
             let frame = listView.frame
             fastAdapter?.backgroundLayoutQueue.addOperation {
                 [weak self] in
-                if item.arrangement(width: frame.width, height: frame.height) != nil {
+                if item.arrangement(width: frame.width, height: /*frame.height*/nil) != nil {
                     DispatchQueue.main.sync {
                         let _ = self?.fastAdapter?.typeInstanceCache.register(item: item)
                         self?.items.append(item)
@@ -66,7 +66,7 @@ public class ItemList<Itm: Item> {
             let frame = listView.frame
             fastAdapter?.backgroundLayoutQueue.addOperation {
                 [weak self] in
-                if item.arrangement(width: frame.width, height: frame.height) != nil {
+                if item.arrangement(width: frame.width, height: /*frame.height*/nil) != nil {
                     let _ = self?.fastAdapter?.typeInstanceCache.register(item: item)
                     self?.items[index] = item
                 }

@@ -42,6 +42,15 @@ public class FastAdapter<Itm: Item> {
         self.dataProvider = FastAdapterDataProvider<Itm>(fastAdapter: self)
         self.typeInstanceCache = TypeInstanceCache<Itm>(fastAdapter: self)
     }
+    
+    public func arrangement(width: CGFloat?, height: CGFloat?) {
+        if let items = adapter?.itemList.items {
+            for item in items {
+                let _ = item.arrangement(width: width, height: height)
+            }
+            listView?.reloadData()
+        }
+    }
 }
 
 class FastAdapterDataProvider<Itm: Item>: FastAdapterDataProviderWrapper {

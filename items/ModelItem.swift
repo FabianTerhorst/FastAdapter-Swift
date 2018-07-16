@@ -6,10 +6,17 @@
 //  Copyright © 2018 everHome. All rights reserved.
 //
 
-open class ModelItem<Model>: Item {
-    public var model: Model
+open class ModelItem<Model>: AbstractModelItem {
+    public var model: Model {
+        get {
+            return _model as! Model
+        }
+        set {
+            _model = newValue
+        }
+    }
     
     public init(model: Model) {
-        self.model = model
+        super.init(model: model)
     }
 }

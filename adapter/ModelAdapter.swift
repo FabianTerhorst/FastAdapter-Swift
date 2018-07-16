@@ -22,6 +22,12 @@ public class ModelAdapter<Model, Itm: Item>: Adapter<Itm> {
         }
     }
     
+    public func add(index: Int, model: Model) {
+        if let item = interceptor(model) {
+            itemList.add(index: index, item: item)
+        }
+    }
+    
     public func set(models: [Model]) {
         let items = models.compactMap({ interceptor($0) })
         itemList.set(items: items)

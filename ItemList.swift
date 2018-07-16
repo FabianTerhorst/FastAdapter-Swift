@@ -39,6 +39,24 @@ public class ItemList<Itm: Item> {
         }
     }
     
+    public func add(index: Int, item: Itm) {
+        if let listView = fastAdapter?.listView {
+            let frame = listView.frame
+            fastAdapter?.backgroundLayoutQueue.addOperation {
+                [weak self] in
+                if item.arrangement(width: frame.width, height: /*frame.height*/nil) != nil {
+                    DispatchQueue.main.sync {
+                        let _ = self?.fastAdapter?.typeInstanceCache.register(item: item)
+                        self?.items.insert(item, at: index)
+                        if let count = self?.items.count, count > 0 {
+                            listView.insertItems(at: [IndexPath(row: index, section: 0)])
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     public func set(items: [Itm]) {
         if let listView = fastAdapter?.listView {
             let frame = listView.frame

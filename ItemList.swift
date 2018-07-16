@@ -61,6 +61,19 @@ public class ItemList<Itm: Item> {
         }
     }
     
+    public func update(index: Int) {
+        if let listView = fastAdapter?.listView {
+            let item = items[index]
+            let frame = listView.frame
+            fastAdapter?.backgroundLayoutQueue.addOperation {
+                let _ = item.arrangement(width: frame.width, height: /*frame.height*/nil)
+                DispatchQueue.main.sync {
+                    listView.reloadItems(at: [IndexPath(row: index, section: 0)])
+                }
+            }
+        }
+    }
+    
     public func set(index: Int, item: Itm) {
         if let listView = fastAdapter?.listView {
             let frame = listView.frame
@@ -83,5 +96,13 @@ public class ItemList<Itm: Item> {
     
     public func remove(position: Int) {
         items.remove(at: position)
+        if let listView = fastAdapter?.listView {
+            listView.performBatchUpdates({
+                listView.deleteItems(at: [IndexPath(row: position, section: 0)])
+            }, completion: {
+                finished in
+                listView.reloadData()
+            })
+        }
     }
 }

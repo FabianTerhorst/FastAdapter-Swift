@@ -33,6 +33,14 @@ public class ModelAdapter<Model, Itm: Item>: Adapter<Itm> {
         }
     }
     
+    public func remove(index: Int) {
+        itemList.remove(position: index)
+    }
+    
+    public func update(index: Int) {
+        itemList.update(index: index)
+    }
+    
     public func getItems() -> [Itm] {
         return itemList.items
     }

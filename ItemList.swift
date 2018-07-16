@@ -57,6 +57,32 @@ public class ItemList<Itm: Item> {
         }
     }
     
+    public func addAll(items: [Itm]) {
+        if let listView = fastAdapter?.listView {
+            let frame = listView.frame
+            fastAdapter?.backgroundLayoutQueue.addOperation {
+                [weak self] in
+                var arrangedItems = [Itm]()
+                for item in items {
+                    if item.arrangement(width: frame.width, height: /*frame.height*/nil) != nil {
+                        arrangedItems.append(item)
+                    }
+                }
+                DispatchQueue.main.sync {
+                    var indexPaths = [IndexPath]()
+                    var index = 0
+                    for item in arrangedItems {
+                        let _ = self?.fastAdapter?.typeInstanceCache.register(item: item)
+                        self?.items.append(item)
+                        indexPaths.append(IndexPath(row: index, section: 0))
+                        index += 1
+                    }
+                    listView.insertItems(at: indexPaths)
+                }
+            }
+        }
+    }
+    
     public func set(items: [Itm]) {
         if let listView = fastAdapter?.listView {
             let frame = listView.frame
@@ -98,10 +124,10 @@ public class ItemList<Itm: Item> {
             fastAdapter?.backgroundLayoutQueue.addOperation {
                 [weak self] in
                 if item.arrangement(width: frame.width, height: /*frame.height*/nil) != nil {
-                    let _ = self?.fastAdapter?.typeInstanceCache.register(item: item)
                     self?.items[index] = item
                 }
                 DispatchQueue.main.sync {
+                    let _ = self?.fastAdapter?.typeInstanceCache.register(item: item)
                     listView.reloadItems(at: [IndexPath(row: index, section: 0)])
                 }
             }

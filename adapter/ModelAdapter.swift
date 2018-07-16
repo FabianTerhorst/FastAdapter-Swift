@@ -28,6 +28,11 @@ public class ModelAdapter<Model, Itm: Item>: Adapter<Itm> {
         }
     }
     
+    public func addAll(models: [Model]) {
+        let items = models.compactMap({ interceptor($0) })
+        itemList.addAll(items: items)
+    }
+    
     public func set(models: [Model]) {
         let items = models.compactMap({ interceptor($0) })
         itemList.set(items: items)

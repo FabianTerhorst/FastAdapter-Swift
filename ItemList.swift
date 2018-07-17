@@ -48,9 +48,7 @@ public class ItemList<Itm: Item> {
                     DispatchQueue.main.sync {
                         let _ = self?.fastAdapter?.typeInstanceCache.register(item: item)
                         self?.items.insert(item, at: index)
-                        if let count = self?.items.count, count > 0 {
-                            listView.insertItems(at: [IndexPath(row: index, section: 0)])
-                        }
+                        listView.insertItems(at: [IndexPath(row: index, section: 0)])
                     }
                 }
             }
@@ -134,8 +132,15 @@ public class ItemList<Itm: Item> {
         }
     }
     
-    public func get(position: Int) -> Itm {
+    public subscript(position: Int) -> Itm {
         return items[position]
+    }
+    
+    public subscript (safe position: Int) -> Itm? {
+        if items.count <= position {
+            return nil
+        }
+        return self[position]
     }
     
     public func remove(position: Int) {

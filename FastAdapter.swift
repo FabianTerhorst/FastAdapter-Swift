@@ -65,7 +65,6 @@ class FastAdapterDataProvider<Itm: Item>: FastAdapterDataProviderWrapper {
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if let item = fastAdapter?.adapter?.itemList.get(position: indexPath.row) {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: item.getType(), for: indexPath)
             item.makeViews(in: cell.contentView)
             return cell
@@ -80,7 +79,7 @@ class FastAdapterDataProvider<Itm: Item>: FastAdapterDataProviderWrapper {
     }
     
     override func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return fastAdapter?.adapter?.itemList.get(position: indexPath.row).arrangement?.frame.size ?? .zero
+        return fastAdapter?.adapter?.itemList[safe: indexPath.row]?.arrangement?.frame.size ?? .zero
     }
 }
 

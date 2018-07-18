@@ -68,7 +68,7 @@ public class ItemList<Itm: Item> {
                 }
                 DispatchQueue.main.sync {
                     var indexPaths = [IndexPath]()
-                    var index = 0
+                    var index = self?.items.count ?? 0
                     for item in arrangedItems {
                         let _ = self?.fastAdapter?.typeInstanceCache.register(item: item)
                         self?.items.append(item)
@@ -145,6 +145,9 @@ public class ItemList<Itm: Item> {
     }
     
     public func remove(position: Int) {
+        if items.count <= position {
+            return
+        }
         items.remove(at: position)
         if let listView = fastAdapter?.listView {
             listView.performBatchUpdates({

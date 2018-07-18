@@ -26,8 +26,9 @@ public class FastAdapter<Itm: Item> {
         queue.qualityOfService = .userInitiated
         return queue
     }()
-    var dataProvider: FastAdapterDataProvider<Itm>!
-    var typeInstanceCache: TypeInstanceCache<Itm>!
+    let dataProvider: FastAdapterDataProvider<Itm>
+    let typeInstanceCache: TypeInstanceCache<Itm>
+    let arranger: Arranger<Itm>
     var listView: UICollectionView? {
         didSet {
             typeInstanceCache.renew()
@@ -38,33 +39,39 @@ public class FastAdapter<Itm: Item> {
             adapter?.fastAdapter = self
         }
     }
-    public init() {
-        self.dataProvider = FastAdapterDataProvider<Itm>(fastAdapter: self)
-        self.typeInstanceCache = TypeInstanceCache<Itm>(fastAdapter: self)
+    
+    public init(dataProvider: FastAdapterDataProvider<Itm> = FastAdapterDataProvider<Itm>(),
+                typeInstanceCache: TypeInstanceCache<Itm> = TypeInstanceCache<Itm>(),
+                arranger: Arranger<Itm> = Arranger<Itm>()) {
+        self.dataProvider = dataProvider
+        self.typeInstanceCache = typeInstanceCache
+        self.arranger = arranger
+        self.dataProvider.fastAdapter = self
+        self.typeInstanceCache.fastAdapter = self
+        self.arranger.fastAdapter = self
     }
     
     public func arrangement(width: CGFloat?, height: CGFloat?) {
         if let items = adapter?.itemList.items {
             for item in items {
-                let _ = item.arrangement(width: width, height: height)
+                let _ = arranger.arrangeItem(item: item, width: width, height: height)
             }
             listView?.reloadData()
         }
     }
 }
 
-class FastAdapterDataProvider<Itm: Item>: FastAdapterDataProviderWrapper {
-    private weak var fastAdapter: FastAdapter<Itm>?
+open class FastAdapterDataProvider<Itm: Item>: FastAdapterDataProviderWrapper {
+    public weak var fastAdapter: FastAdapter<Itm>?
     
-    init(fastAdapter: FastAdapter<Itm>) {
-        self.fastAdapter = fastAdapter
+    public override init() {
     }
     
-    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    override public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return fastAdapter?.adapter?.itemList.count ?? 0
     }
     
-    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    override public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if let item = fastAdapter?.adapter?.itemList[safe: indexPath.row] {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: item.getType(), for: indexPath)
             item.makeViews(in: cell.contentView)
@@ -79,31 +86,31 @@ class FastAdapterDataProvider<Itm: Item>: FastAdapterDataProviderWrapper {
         return UICollectionViewCell()
     }
     
-    override func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+    override public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return fastAdapter?.adapter?.itemList[safe: indexPath.row]?.arrangement?.frame.size ?? .zero
     }
 }
 
-class FastAdapterDataProviderWrapper: NSObject {
+open class FastAdapterDataProviderWrapper: NSObject {
     
 }
 
 extension FastAdapterDataProviderWrapper: UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return 0
     }
     
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
+    public func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         return UICollectionViewCell()
     }
 }
 
 extension FastAdapterDataProviderWrapper: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return .zero
     }
 }

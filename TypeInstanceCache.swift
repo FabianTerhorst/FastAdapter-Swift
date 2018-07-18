@@ -11,8 +11,7 @@ public class TypeInstanceCache<Itm: Item> {
     
     var typeInstances = [String: Itm]()
     
-    init(fastAdapter: FastAdapter<Itm>) {
-        self.fastAdapter = fastAdapter
+    public init() {
     }
     
     func register(item: Itm) -> Bool {

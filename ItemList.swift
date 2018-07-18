@@ -26,7 +26,7 @@ public class ItemList<Itm: Item> {
             let frame = listView.frame
             fastAdapter?.backgroundLayoutQueue.addOperation {
                 [weak self] in
-                if item.arrangement(width: frame.width, height: /*frame.height*/nil) != nil {
+                if self?.fastAdapter?.arranger.arrangeItem(item: item, width: frame.width, height: frame.height) != nil {
                     DispatchQueue.main.sync {
                         let _ = self?.fastAdapter?.typeInstanceCache.register(item: item)
                         self?.items.append(item)
@@ -44,7 +44,7 @@ public class ItemList<Itm: Item> {
             let frame = listView.frame
             fastAdapter?.backgroundLayoutQueue.addOperation {
                 [weak self] in
-                if item.arrangement(width: frame.width, height: /*frame.height*/nil) != nil {
+                if self?.fastAdapter?.arranger.arrangeItem(item: item, width: frame.width, height: frame.height) != nil {
                     DispatchQueue.main.sync {
                         let _ = self?.fastAdapter?.typeInstanceCache.register(item: item)
                         self?.items.insert(item, at: index)
@@ -62,7 +62,7 @@ public class ItemList<Itm: Item> {
                 [weak self] in
                 var arrangedItems = [Itm]()
                 for item in items {
-                    if item.arrangement(width: frame.width, height: /*frame.height*/nil) != nil {
+                    if self?.fastAdapter?.arranger.arrangeItem(item: item, width: frame.width, height: frame.height) != nil {
                         arrangedItems.append(item)
                     }
                 }
@@ -88,7 +88,7 @@ public class ItemList<Itm: Item> {
                 [weak self] in
                 var arrangedItems = [Itm]()
                 for item in items {
-                    if item.arrangement(width: frame.width, height: /*frame.height*/nil) != nil {
+                    if self?.fastAdapter?.arranger.arrangeItem(item: item, width: frame.width, height: frame.height) != nil {
                         arrangedItems.append(item)
                     }
                 }
@@ -108,7 +108,8 @@ public class ItemList<Itm: Item> {
             let item = items[index]
             let frame = listView.frame
             fastAdapter?.backgroundLayoutQueue.addOperation {
-                let _ = item.arrangement(width: frame.width, height: /*frame.height*/nil)
+                [weak self] in
+                let _ = self?.fastAdapter?.arranger.arrangeItem(item: item, width: frame.width, height: frame.height)
                 DispatchQueue.main.sync {
                     listView.reloadItems(at: [IndexPath(row: index, section: 0)])
                 }
@@ -121,7 +122,7 @@ public class ItemList<Itm: Item> {
             let frame = listView.frame
             fastAdapter?.backgroundLayoutQueue.addOperation {
                 [weak self] in
-                if item.arrangement(width: frame.width, height: /*frame.height*/nil) != nil {
+                if self?.fastAdapter?.arranger.arrangeItem(item: item, width: frame.width, height: frame.height) != nil {
                     self?.items[index] = item
                 }
                 DispatchQueue.main.sync {

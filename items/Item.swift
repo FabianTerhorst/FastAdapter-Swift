@@ -10,7 +10,7 @@ import struct LayoutKit.LayoutArrangement
 import protocol LayoutKit.Layout
 
 open class Item {
-    var arrangement: LayoutArrangement?
+    public var arrangement: LayoutArrangement?
     
     // Needed for animation
     //weak var contentView: UIView?
@@ -32,7 +32,7 @@ open class Item {
     }
 }
 
-extension Item {
+public extension Item {
     func arrangement(width: CGFloat?, height: CGFloat?) -> LayoutArrangement? {
         arrangement = getLayout()?.arrangement(width: width, height: height)
         return arrangement

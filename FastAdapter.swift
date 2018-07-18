@@ -26,9 +26,23 @@ public class FastAdapter<Itm: Item> {
         queue.qualityOfService = .userInitiated
         return queue
     }()
-    let dataProvider: FastAdapterDataProvider<Itm>
-    let typeInstanceCache: TypeInstanceCache<Itm>
-    let arranger: Arranger<Itm>
+    public var dataProvider: FastAdapterDataProvider<Itm> {
+        didSet {
+            dataProvider.fastAdapter = self
+            listView?.dataSource = dataProvider
+            listView?.delegate = dataProvider
+        }
+    }
+    public var typeInstanceCache: TypeInstanceCache<Itm> {
+        didSet {
+            typeInstanceCache.fastAdapter = self
+        }
+    }
+    public var arranger: Arranger<Itm> {
+        didSet {
+            arranger.fastAdapter = self
+        }
+    }
     var listView: UICollectionView? {
         didSet {
             typeInstanceCache.renew()
@@ -57,6 +71,18 @@ public class FastAdapter<Itm: Item> {
                 let _ = arranger.arrangeItem(item: item, width: width, height: height)
             }
             listView?.reloadData()
+        }
+    }
+    
+    public func arrangement() {
+        if let listView = self.listView {
+            let frame = listView.frame
+            if let items = adapter?.itemList.items {
+                for item in items {
+                    let _ = arranger.arrangeItem(item: item, width: frame.width, height: frame.height)
+                }
+                listView.reloadData()
+            }
         }
     }
 }

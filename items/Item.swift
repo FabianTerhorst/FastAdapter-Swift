@@ -28,8 +28,16 @@ open class Item {
     }
     
     open func onBind(cell: UICollectionViewCell) -> UICollectionViewCell {
-        makeViews(in: cell.contentView)
+        arrangement?.makeViews(in: cell.contentView)
         return cell
+    }
+    
+    /**
+     Return is only used to determinate if item is measurable. Unmeasureable items will be ignored.
+    **/
+    open func onMeasure(width: CGFloat?, height: CGFloat?) -> Bool {
+        arrangement = getLayout()?.arrangement(width: width, height: height)
+        return arrangement != nil
     }
     
     open func getSize() -> CGSize {
@@ -38,24 +46,5 @@ open class Item {
     
     public init() {
         
-    }
-}
-
-public extension Item {
-    func arrangement(width: CGFloat?, height: CGFloat?) -> LayoutArrangement? {
-        arrangement = getLayout()?.arrangement(width: width, height: height)
-        return arrangement
-    }
-    
-    func makeViews(in view: UIView) {
-        /*if let contentView = contentView {
-            if let animation = arrangement?.prepareAnimation(for: contentView) {
-                UIView.animate(withDuration: 5.0, animations: animation.apply, completion: { (_) in
-                })
-            }
-        } else {*/
-        arrangement?.makeViews(in: view)
-        //}
-        //contentView = view
     }
 }

@@ -15,14 +15,14 @@ open class Arranger<Itm: Item> {
         
     }
     
-    open func arrangeItem(item: Itm) -> LayoutArrangement? {
+    open func arrangeItem(item: Itm) -> Bool {
         if let collectionView = fastAdapter?.listView {
             return arrangeItem(item: item, width: collectionView.frame.width, height: collectionView.frame.height)
         }
-        return nil
+        return false
     }
     
-    open func arrangeItem(item: Itm, width: CGFloat?, height: CGFloat?) -> LayoutArrangement? {
-        return item.arrangement(width: width, height: nil)
+    open func arrangeItem(item: Itm, width: CGFloat?, height: CGFloat?) -> Bool {
+        return item.onMeasure(width: width, height: nil)
     }
 }

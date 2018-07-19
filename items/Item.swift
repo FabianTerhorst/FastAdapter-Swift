@@ -6,21 +6,9 @@
 //  Copyright © 2018 everHome. All rights reserved.
 //
 
-import struct LayoutKit.LayoutArrangement
-import protocol LayoutKit.Layout
-
-open class Item {
-    public var arrangement: LayoutArrangement?
-    
-    // Needed for animation
-    //weak var contentView: UIView?
-    
+open class Item {    
     open func getType() -> String {
         return String(describing: type(of: self))
-    }
-    
-    open func getLayout() -> Layout? {
-        return nil
     }
     
     open func getCell() -> AnyClass {
@@ -28,7 +16,6 @@ open class Item {
     }
     
     open func onBind(cell: UICollectionViewCell) -> UICollectionViewCell {
-        arrangement?.makeViews(in: cell.contentView)
         return cell
     }
     
@@ -36,12 +23,12 @@ open class Item {
      Return is only used to determinate if item is measurable. Unmeasureable items will be ignored.
     **/
     open func onMeasure(width: CGFloat?, height: CGFloat?) -> Bool {
-        arrangement = getLayout()?.arrangement(width: width, height: height)
-        return arrangement != nil
+        return false
     }
     
+    //TODO: mabye also support nil return for also unmeasureable layouts, or return size in onMeasure and handle the getSize internally
     open func getSize() -> CGSize {
-        return arrangement?.frame.size ?? .zero
+        return .zero
     }
     
     public init() {

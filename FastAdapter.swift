@@ -26,7 +26,7 @@ public class FastAdapter<Itm: Item> {
         queue.qualityOfService = .userInitiated
         return queue
     }()
-    public var dataProvider: FastAdapterDataProvider<Itm> {
+    public var dataProvider: DataProvider<Itm> {
         didSet {
             dataProvider.fastAdapter = self
             listView?.dataSource = dataProvider
@@ -54,7 +54,7 @@ public class FastAdapter<Itm: Item> {
         }
     }
     
-    public init(dataProvider: FastAdapterDataProvider<Itm> = FastAdapterDataProvider<Itm>(),
+    public init(dataProvider: DataProvider<Itm> = DataProvider<Itm>(),
                 typeInstanceCache: TypeInstanceCache<Itm> = TypeInstanceCache<Itm>(),
                 measurer: Measurer<Itm> = Measurer<Itm>()) {
         self.dataProvider = dataProvider
@@ -87,7 +87,7 @@ public class FastAdapter<Itm: Item> {
     }
 }
 
-open class FastAdapterDataProvider<Itm: Item>: FastAdapterDataProviderWrapper {
+open class DataProvider<Itm: Item>: DataProviderWrapper {
     public weak var fastAdapter: FastAdapter<Itm>?
     
     public override init() {
@@ -116,11 +116,11 @@ open class FastAdapterDataProvider<Itm: Item>: FastAdapterDataProviderWrapper {
     }
 }
 
-open class FastAdapterDataProviderWrapper: NSObject {
+open class DataProviderWrapper: NSObject {
     
 }
 
-extension FastAdapterDataProviderWrapper: UICollectionViewDataSource {
+extension DataProviderWrapper: UICollectionViewDataSource {
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return 0
     }
@@ -134,12 +134,11 @@ extension FastAdapterDataProviderWrapper: UICollectionViewDataSource {
     }
 }
 
-extension FastAdapterDataProviderWrapper: UICollectionViewDelegateFlowLayout {
+extension DataProviderWrapper: UICollectionViewDelegateFlowLayout {
     public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return .zero
     }
 }
 
-extension FastAdapterDataProviderWrapper: UICollectionViewDelegate {
-    
+extension DataProviderWrapper: UICollectionViewDelegate {
 }

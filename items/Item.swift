@@ -32,6 +32,10 @@ open class Item {
         return cell
     }
     
+    open func getSize() -> CGSize {
+        return arrangement?.frame.size ?? .zero
+    }
+    
     public init() {
         
     }

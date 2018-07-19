@@ -112,7 +112,7 @@ open class FastAdapterDataProvider<Itm: Item>: FastAdapterDataProviderWrapper {
     }
     
     override public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return fastAdapter?.adapter?.itemList[safe: indexPath.row]?.arrangement?.frame.size ?? .zero
+        return fastAdapter?.adapter?.itemList[safe: indexPath.row]?.getSize() ?? .zero
     }
 }
 

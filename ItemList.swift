@@ -117,6 +117,26 @@ public class ItemList<Itm: Item> {
         }
     }
     
+    public func updateAll() {
+        if let listView = fastAdapter?.listView {
+            let frame = listView.frame
+            let items = self.items
+            fastAdapter?.backgroundLayoutQueue.addOperation {
+                [weak self] in
+                for item in items {
+                    let _ = self?.fastAdapter?.arranger.arrangeItem(item: item, width: frame.width, height: frame.height)
+                }
+                var indexPaths = [IndexPath]()
+                DispatchQueue.main.sync {
+                    for i in 0..<items.count {
+                        indexPaths.append(IndexPath(row: i, section: 0))
+                    }
+                    listView.reloadItems(at: indexPaths)
+                }
+            }
+        }
+    }
+    
     public func set(index: Int, item: Itm) {
         if let listView = fastAdapter?.listView {
             let frame = listView.frame

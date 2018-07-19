@@ -100,8 +100,7 @@ open class FastAdapterDataProvider<Itm: Item>: FastAdapterDataProviderWrapper {
     override public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if let item = fastAdapter?.adapter?.itemList[safe: indexPath.row] {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: item.getType(), for: indexPath)
-            item.makeViews(in: cell.contentView)
-            return cell
+            return item.onBind(cell: cell)
         }
         // Last resort, should never happen
         if let firstType = fastAdapter?.typeInstanceCache.typeInstances.first {

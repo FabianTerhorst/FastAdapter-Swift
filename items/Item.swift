@@ -27,6 +27,11 @@ open class Item {
         return UICollectionViewCell.self
     }
     
+    open func onBind(cell: UICollectionViewCell) -> UICollectionViewCell {
+        makeViews(in: cell.contentView)
+        return cell
+    }
+    
     public init() {
         
     }

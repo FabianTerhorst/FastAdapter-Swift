@@ -38,9 +38,9 @@ public class FastAdapter<Itm: Item> {
             typeInstanceCache.fastAdapter = self
         }
     }
-    public var arranger: Arranger<Itm> {
+    public var measurer: Measurer<Itm> {
         didSet {
-            arranger.fastAdapter = self
+            measurer.fastAdapter = self
         }
     }
     var listView: UICollectionView? {
@@ -56,19 +56,19 @@ public class FastAdapter<Itm: Item> {
     
     public init(dataProvider: FastAdapterDataProvider<Itm> = FastAdapterDataProvider<Itm>(),
                 typeInstanceCache: TypeInstanceCache<Itm> = TypeInstanceCache<Itm>(),
-                arranger: Arranger<Itm> = Arranger<Itm>()) {
+                measurer: Measurer<Itm> = Measurer<Itm>()) {
         self.dataProvider = dataProvider
         self.typeInstanceCache = typeInstanceCache
-        self.arranger = arranger
+        self.measurer = measurer
         self.dataProvider.fastAdapter = self
         self.typeInstanceCache.fastAdapter = self
-        self.arranger.fastAdapter = self
+        self.measurer.fastAdapter = self
     }
     
     public func arrangement(width: CGFloat?, height: CGFloat?) {
         if let items = adapter?.itemList.items {
             for item in items {
-                let _ = arranger.arrangeItem(item: item, width: width, height: height)
+                let _ = measurer.measureItem(item: item, width: width, height: height)
             }
             listView?.reloadData()
         }
@@ -79,7 +79,7 @@ public class FastAdapter<Itm: Item> {
             let frame = listView.frame
             if let items = adapter?.itemList.items {
                 for item in items {
-                    let _ = arranger.arrangeItem(item: item, width: frame.width, height: frame.height)
+                    let _ = measurer.measureItem(item: item, width: frame.width, height: frame.height)
                 }
                 listView.reloadData()
             }

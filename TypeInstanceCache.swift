@@ -26,7 +26,11 @@ public class TypeInstanceCache<Itm: Item> {
     
     private func _register(typeId: String, item: Itm) {
         if let listView = fastAdapter?.listView {
-            listView.register(item.getCell(), forCellWithReuseIdentifier: typeId)
+            if let nib = item.getNib() {
+                listView.register(nib, forCellWithReuseIdentifier: typeId)
+            } else {
+                listView.register(item.getCell(), forCellWithReuseIdentifier: typeId)
+            }
         }
     }
     

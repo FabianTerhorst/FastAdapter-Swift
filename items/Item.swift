@@ -6,13 +6,17 @@
 //  Copyright © 2018 everHome. All rights reserved.
 //
 
-open class Item {    
+open class Item {
     open func getType() -> String {
         return String(describing: type(of: self))
     }
     
     open func getCell() -> AnyClass {
         return UICollectionViewCell.self
+    }
+    
+    open func getNib() -> UINib? {
+        return nil
     }
     
     open func onBind(cell: UICollectionViewCell) -> UICollectionViewCell {

@@ -64,6 +64,14 @@ public class ModelAdapter<Model, Itm: Item>: Adapter<Itm> {
         }
     }
     
+    public func expanse(section: Int = 0, index: Int) {
+        itemList.expand(section: section, index: index)
+    }
+    
+    public func collapse(section: Int = 0, index: Int) {
+        itemList.collapse(section: section, index: index)
+    }
+    
     public func getSections() -> [Section<Itm>] {
         return itemList.sections
     }

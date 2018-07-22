@@ -64,6 +64,14 @@ open class DataProvider<Itm: Item>: DataProviderWrapper {
     override public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return fastAdapter?.adapter?.itemList[indexPath.section].items[indexPath.row].getSize() ?? .zero
     }
+    
+    open override func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        return fastAdapter?.adapter?.itemList[section].header?.getSize() ?? .zero
+    }
+    
+    public override func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
+        return fastAdapter?.adapter?.itemList[section].footer?.getSize() ?? .zero
+    }
 }
 
 open class DataProviderWrapper: NSObject {

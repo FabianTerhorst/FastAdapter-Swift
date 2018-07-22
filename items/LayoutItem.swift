@@ -14,7 +14,7 @@ open class LayoutItem: Item {
     // Needed for animation
     //weak var contentView: UIView?
     
-    public var arrangement: LayoutArrangement?
+    private var arrangement: LayoutArrangement?
     
     open override func onBind(cell: inout UICollectionViewCell) {
         arrangement?.makeViews(in: cell.contentView)

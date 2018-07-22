@@ -84,7 +84,7 @@ extension DataProviderWrapper: UICollectionViewDataSource {
     }
     
     public func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 1
+        return 0
     }
     
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {

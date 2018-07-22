@@ -19,8 +19,10 @@ open class Item {
         return nil
     }
     
-    open func onBind(cell: UICollectionViewCell) -> UICollectionViewCell {
-        return cell
+    open func onBind(cell: inout UICollectionViewCell) {
+    }
+    
+    open func onBind(view: inout UICollectionReusableView) {
     }
     
     /**

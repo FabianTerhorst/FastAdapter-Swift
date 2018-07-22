@@ -34,7 +34,7 @@ public class TypeInstanceCache<Itm: Item> {
         }
     }
     
-    func get(typeId: String) -> Item? {
+    public subscript(typeId: String) -> Item? {
         return typeInstances[typeId]
     }
     

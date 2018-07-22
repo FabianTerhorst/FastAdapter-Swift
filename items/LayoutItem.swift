@@ -16,9 +16,12 @@ open class LayoutItem: Item {
     
     public var arrangement: LayoutArrangement?
     
-    open override func onBind(cell: UICollectionViewCell) -> UICollectionViewCell {
+    open override func onBind(cell: inout UICollectionViewCell) {
         arrangement?.makeViews(in: cell.contentView)
-        return cell
+    }
+    
+    open override func onBind(view: inout UICollectionReusableView) {
+        arrangement?.makeViews(in: view)
     }
     
     open func getLayout() -> Layout? {

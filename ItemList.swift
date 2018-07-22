@@ -302,3 +302,23 @@ public class ItemList<Itm: Item> {
         }
     }
 }
+
+fileprivate extension Expandable {
+    func getMeasuredSubItems<Itm>(measurer: Measurer<Itm>, width: CGFloat?, height: CGFloat?) -> [Itm]? {
+        var measuredSubItems: [Itm]?
+        if let subItems = subItems {
+            for subItem in subItems {
+                guard let correctTypeSubItem = subItem as? Itm else {
+                    continue
+                }
+                if measurer.measureItem(item: correctTypeSubItem, width: width, height: height) == true {
+                    if measuredSubItems == nil {
+                        measuredSubItems = [Itm]()
+                    }
+                    measuredSubItems?.append(correctTypeSubItem)
+                }
+            }
+        }
+        return measuredSubItems
+    }
+}

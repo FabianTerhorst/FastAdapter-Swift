@@ -198,7 +198,6 @@ public class ItemList<Itm: Item> {
             }, completion: {
                 finished in
                 listView.reloadSections(IndexSet(integer: section))
-                //listView.reloadData()
             })
         }
     }
@@ -300,9 +299,9 @@ public class ItemList<Itm: Item> {
                 return
             }
             expandable.expanded = false
-            // Checks if sub item is also expanded
+            // Checks if an sub item is also expanded
             for i in index + 1...index + count {
-                if let subItemCount = self?.subItemCount[section]?[i], count > 0 {
+                if let subItemCount = self?.subItemCount[section]?[i] {
                     count += subItemCount
                 }
             }

@@ -72,6 +72,10 @@ public class ModelAdapter<Model, Itm: Item>: Adapter<Itm> {
         itemList.collapse(section: section, index: index)
     }
     
+    public func toggleExpanded(section: Int = 0, index: Int) {
+        itemList.toggleExpanded(section: section, index: index)
+    }
+    
     public func getSections() -> [Section<Itm>] {
         return itemList.sections
     }

@@ -48,10 +48,10 @@ class SampleItem: Item {
     }
     
     override func onMeasure(width: CGFloat?, height: CGFloat?) -> Bool {
-        guard let width = width else {
+        guard let width = width, let height = heightWithConstrainedWidth(width, font: font) else {
             return false
         }
-        size = CGSize(width: width, height: heightWithConstrainedWidth(width, font: font))
+        size = CGSize(width: width, height: height)
         return true
     }
     
@@ -61,7 +61,7 @@ class SampleItem: Item {
     
     func heightWithConstrainedWidth(_ width: CGFloat, font: UIFont) -> CGFloat? {
         let constraintRect = CGSize(width: width, height: CGFloat.greatestFiniteMagnitude)
-        let boundingBox = self.boundingRect(with: constraintRect, options: NSStringDrawingOptions.usesLineFragmentOrigin, attributes: [NSFontAttributeName: font], context: nil)
+        let boundingBox = name(with: constraintRect, options: NSStringDrawingOptions.usesLineFragmentOrigin, attributes: [NSFontAttributeName: font], context: nil)
     
         return ceil(boundingBox.height)
     }

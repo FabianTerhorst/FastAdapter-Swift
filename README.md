@@ -61,7 +61,7 @@ class SampleItem: Item {
     
     func heightWithConstrainedWidth(_ width: CGFloat, font: UIFont) -> CGFloat? {
         let constraintRect = CGSize(width: width, height: CGFloat.greatestFiniteMagnitude)
-        let boundingBox = name(with: constraintRect, options: NSStringDrawingOptions.usesLineFragmentOrigin, attributes: [NSFontAttributeName: font], context: nil)
+        let boundingBox = name.boundingRect(with: constraintRect, options: NSStringDrawingOptions.usesLineFragmentOrigin, attributes: [NSFontAttributeName: font], context: nil)
     
         return ceil(boundingBox.height)
     }

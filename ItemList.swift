@@ -46,7 +46,6 @@ public class ItemList<Itm: Item> {
     }
     
     public func add(section: Int = 0, index: Int, item: Itm) {
-        let index = getExpandableOffset(index: index)
         if let listView = fastAdapter?.listView {
             let frame = listView.frame
             fastAdapter?.backgroundLayoutQueue.addOperation {
@@ -90,7 +89,6 @@ public class ItemList<Itm: Item> {
     }
     
     public func addAll(section: Int = 0, index: Int, items: [Itm]) {
-        let index = getExpandableOffset(index: index)
         if let listView = fastAdapter?.listView {
             let frame = listView.frame
             fastAdapter?.backgroundLayoutQueue.addOperation {
@@ -139,7 +137,6 @@ public class ItemList<Itm: Item> {
     }
     
     public func update(section: Int = 0, index: Int) {
-        let index = getExpandableOffset(index: index)
         if let listView = fastAdapter?.listView {
             let item = self[section].items[index]
             let frame = listView.frame
@@ -175,7 +172,6 @@ public class ItemList<Itm: Item> {
     }
     
     public func set(section: Int = 0, index: Int, item: Itm) {
-        let index = getExpandableOffset(index: index)
         if let listView = fastAdapter?.listView {
             let frame = listView.frame
             fastAdapter?.backgroundLayoutQueue.addOperation {
@@ -192,7 +188,6 @@ public class ItemList<Itm: Item> {
     }
     
     public func remove(section: Int = 0, position: Int) {
-        let position = getExpandableOffset(index: position)
         if self[section].items.count <= position {
             return
         }
@@ -241,7 +236,6 @@ public class ItemList<Itm: Item> {
     }
     
     public func expand(section: Int = 0, index: Int) {
-        let index = getExpandableOffset(index: index)
         guard let fastAdapter = fastAdapter, let listView = fastAdapter.listView else {
             return
         }
@@ -264,11 +258,11 @@ public class ItemList<Itm: Item> {
                 self?.subItemCount[section] = [Int : Int]()
             } else {
                 // Count all keys up that higher then the current index
-                if let keys = self?.subItemCount.keys {
+                if let keys = self?.subItemCount[section]?.keys {
                     for key in keys {
                         if key > index {
-                            if let entry = self?.subItemCount.removeValue(forKey: key) {
-                                self?.subItemCount[key + measuredSubItemsCount] = entry
+                            if let entry = self?.subItemCount[section]?.removeValue(forKey: key) {
+                                self?.subItemCount[section]?[key + measuredSubItemsCount] = entry
                             }
                         }
                     }
@@ -290,11 +284,10 @@ public class ItemList<Itm: Item> {
     }
     
     public func collapse(section: Int = 0, index: Int) {
-        let index = getExpandableOffset(index: index)
         if subItemCount[section]?.count ?? 0 <= section {
             return
         }
-        guard let count = subItemCount[section]?[index], count > 0 else {
+        guard var count = subItemCount[section]?[index], count > 0 else {
             return
         }
         guard let fastAdapter = fastAdapter, let listView = fastAdapter.listView else {
@@ -307,18 +300,24 @@ public class ItemList<Itm: Item> {
                 return
             }
             expandable.expanded = false
+            // Checks if sub item is also expanded
+            for i in index + 1...index + count {
+                if let subItemCount = self?.subItemCount[section]?[i], count > 0 {
+                    count += subItemCount
+                }
+            }
             // Count all keys down that are higher then the current index
-            if let keys = self?.subItemCount.keys {
+            if let keys = self?.subItemCount[section]?.keys {
                 for key in keys {
                     if key > index {
-                        if let entry = self?.subItemCount.removeValue(forKey: key) {
-                            self?.subItemCount[key - count] = entry
+                        if let entry = self?.subItemCount[section]?.removeValue(forKey: key) {
+                            self?.subItemCount[section]?[key - count] = entry
                         }
                     }
                 }
             }
             self?.sections[section].items.removeSubrange(index + 1...index + count)
-            self?.subItemCount[section]?[index] = 0
+            self?.subItemCount[section]?.removeValue(forKey: index)
             DispatchQueue.main.sync {
                 var indexPaths = [IndexPath]()
                 for i in 1...count {
@@ -335,7 +334,7 @@ public class ItemList<Itm: Item> {
     }
     
     public func toggleExpanded(section: Int = 0, index: Int) {
-        guard let expandable = sections[section].items[getExpandableOffset(section: section, index: index)] as? Expandable else {
+        guard let expandable = sections[section].items[index] as? Expandable else {
             return
         }
         if expandable.expanded {
@@ -345,7 +344,7 @@ public class ItemList<Itm: Item> {
         }
     }
     
-    private func getExpandableOffset(section: Int = 0, index: Int) -> Int {
+    public func getExpandableOffset(section: Int = 0, index: Int) -> Int {
         guard let keys = subItemCount[section]?.keys else {
             return index
         }

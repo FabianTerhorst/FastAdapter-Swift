@@ -46,6 +46,7 @@ public class ItemList<Itm: Item> {
     }
     
     public func add(section: Int = 0, index: Int, item: Itm) {
+        let index = getExpandableOffset(index: index)
         if let listView = fastAdapter?.listView {
             let frame = listView.frame
             fastAdapter?.backgroundLayoutQueue.addOperation {
@@ -89,6 +90,7 @@ public class ItemList<Itm: Item> {
     }
     
     public func addAll(section: Int = 0, index: Int, items: [Itm]) {
+        let index = getExpandableOffset(index: index)
         if let listView = fastAdapter?.listView {
             let frame = listView.frame
             fastAdapter?.backgroundLayoutQueue.addOperation {
@@ -137,6 +139,7 @@ public class ItemList<Itm: Item> {
     }
     
     public func update(section: Int = 0, index: Int) {
+        let index = getExpandableOffset(index: index)
         if let listView = fastAdapter?.listView {
             let item = self[section].items[index]
             let frame = listView.frame
@@ -172,6 +175,7 @@ public class ItemList<Itm: Item> {
     }
     
     public func set(section: Int = 0, index: Int, item: Itm) {
+        let index = getExpandableOffset(index: index)
         if let listView = fastAdapter?.listView {
             let frame = listView.frame
             fastAdapter?.backgroundLayoutQueue.addOperation {
@@ -188,6 +192,7 @@ public class ItemList<Itm: Item> {
     }
     
     public func remove(section: Int = 0, position: Int) {
+        let position = getExpandableOffset(index: position)
         if self[section].items.count <= position {
             return
         }

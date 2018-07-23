@@ -32,12 +32,9 @@ public class ItemList<Itm: Item> {
                 if self?.fastAdapter?.measurer.measureItem(item: item, width: frame.width, height: frame.height) == true {
                     DispatchQueue.main.sync {
                         let _ = self?.fastAdapter?.typeInstanceCache.register(item: item)
-                        if var sectionItems = self?[section].items {
-                            sectionItems.append(item)
-                            let count = sectionItems.count
-                            if count > 0 {
-                                listView.insertItems(at: [IndexPath(row: count - 1, section: section)])
-                            }
+                        self?[section].items.append(item)
+                        if let count = self?[section].items.count, count > 0  {
+                            listView.insertItems(at: [IndexPath(row: count - 1, section: section)])
                         }
                     }
                 }

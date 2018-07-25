@@ -76,6 +76,14 @@ public class ModelAdapter<Model, Itm: Item>: Adapter<Itm> {
         itemList.toggleExpanded(section: section, index: index)
     }
     
+    public func clear() {
+        itemList.clear()
+    }
+    
+    public func clear(section: Int) {
+        itemList.clear(section: section)
+    }
+    
     public func getSections() -> [Section<Itm>] {
         return itemList.sections
     }

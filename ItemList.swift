@@ -195,6 +195,7 @@ open class ItemList<Itm: Item> {
         addOperation {
             [weak self] in
             if self?.fastAdapter?.measurer.measureItem(item: item, width: frame?.width, height: frame?.height) != nil {
+            if self?.fastAdapter?.measurer.measureItem(item: item, width: frame?.width, height: frame?.height) == true {
                 ItemList<Itm>.main {
                     let _ = self?.fastAdapter?.typeInstanceCache.register(item: item, forSupplementaryViewOfKind: UICollectionElementKindSectionFooter)
                     self?[section].footer = item
@@ -300,6 +301,30 @@ open class ItemList<Itm: Item> {
         } else {
             expand(section: section, index: index)
         }
+    }
+    
+    public func clear() {
+        for (sectionIndex, section) in sections.enumerated() {
+            _clearSection(sectionIndex: sectionIndex, section: section)
+        }
+    }
+    
+    public func clear(section: Int) {
+        ItemList<Itm>.main {
+            _clearSection(sectionIndex: section, section: self[section])
+        }
+    }
+    
+    private func _clearSection(sectionIndex: Int, section: Section<Itm>) {
+        section.header = nil
+        let count = section.items.count
+        section.items.removeAll()
+        section.footer = nil
+        var indexPaths = [IndexPath]()
+        for i in 0..<count {
+            indexPaths.append(IndexPath(row: i, section: sectionIndex))
+        }
+        fastAdapter?.notifier.deleteItems(in: sectionIndex, at: indexPaths)
     }
     
     public func getExpandableOffset(section: Int = 0, index: Int) -> Int {

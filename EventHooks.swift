@@ -9,7 +9,7 @@
 public class EventHooks<Itm: Item> {
     var eventHooks = [Event: [(Itm, Event) -> ()]]()
     
-    public func add(event: Event, eventHook: @escaping (Itm, Event) -> ()) {
+    public func add(on event: Event, eventHook: @escaping (Itm, Event) -> ()) {
         if eventHooks[event] == nil {
             eventHooks[event] = [(Itm, Event) -> ()]()
         }

@@ -1,10 +1,19 @@
 # FastAdapter-Swift
 
+### Features
+- expandable items
+- layoutkit support
+- event hooks
+- footer, header items
+- multi sections
+- background measuring
+- modularity
+- event hooks
+
 ### TODO
 - auto collapsing for expandable
 - multi adapter support
 - click listener
-- event hooks
 - selectable, selection, multiselection
 - drag, drop
 - filter
@@ -13,7 +22,6 @@
 
 ### Untested
 - expandable with more then one depth
-- header, footer item
 - items without using layoutkit
 
 ```swift
@@ -84,4 +92,53 @@ fastAdapter.adapter = modelAdapter
 fastAdapter.with(collectionView: collectionView)
 ...
 modelAdapter.add(Device())
+```
+
+### Event hooks
+```swift
+
+public extension Events {
+    public static let close = Event(name: "close")
+}
+
+class SampleEventHookItem: Item, Hookable {
+    func someFunction() {
+        self.event(event: .close)
+    }
+}
+
+fastAdapter.eventHooks.add(on: .close) {
+    [weak self] item, event in
+    self?.dismiss(animated: true, completion: nil)
+}
+```
+
+### Advanced event hooks
+```swift
+
+public extension Events {
+    public static let customEvent = Event(name: "custom event")
+}
+
+class MyCustomEvent: Event {
+    private let data: Data
+    
+    public init(data: Data) {
+        self.data = data
+        super.init(name: "custom event")
+    }
+}
+
+class SampleEventHookItem: Item, Hookable {
+    func someFunction() {
+        self.event(event: MyCustomEvent(data: data))
+    }
+}
+
+fastAdapter.eventHooks.add(on: .customEvent) {
+    item, event in
+    if let customEvent = event as? MyCustomEvent {
+        print(customEvent.data)
+    }
+}
 ```

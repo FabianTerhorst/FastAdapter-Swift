@@ -11,6 +11,8 @@ public class TypeInstanceCache<Itm: Item> {
     
     var typeInstances = [String: Itm]()
     
+    var supplementaryViewTypeInstances = [String: [String: Itm]]()
+    
     public init() {
     }
     
@@ -19,6 +21,20 @@ public class TypeInstanceCache<Itm: Item> {
         if typeInstances.index(forKey: typeId) == nil {
             typeInstances[typeId] = item
             _register(typeId: typeId, item: item)
+            return true
+        }
+        return false
+    }
+    
+    func register(item: Itm, forSupplementaryViewOfKind: String) -> Bool {
+        let typeId = item.getType()
+        let typeInstances = supplementaryViewTypeInstances[forSupplementaryViewOfKind]
+        if typeInstances == nil {
+            supplementaryViewTypeInstances[forSupplementaryViewOfKind] = [String: Itm]()
+        }
+        if typeInstances?.index(forKey: typeId) == nil {
+            supplementaryViewTypeInstances[forSupplementaryViewOfKind]?[typeId] = item
+            _register(typeId: typeId, item: item, forSupplementaryViewOfKind: forSupplementaryViewOfKind)
             return true
         }
         return false
@@ -34,17 +50,41 @@ public class TypeInstanceCache<Itm: Item> {
         }
     }
     
+    private func _register(typeId: String, item: Itm, forSupplementaryViewOfKind: String) {
+        if let listView = fastAdapter?.listView {
+            if let nib = item.getNib() {
+                listView.register(nib, forSupplementaryViewOfKind: forSupplementaryViewOfKind, withReuseIdentifier: typeId)
+            } else {
+                listView.register(item.getCell(), forSupplementaryViewOfKind: forSupplementaryViewOfKind, withReuseIdentifier: typeId)
+            }
+        }
+    }
+    
     public subscript(typeId: String) -> Item? {
         return typeInstances[typeId]
     }
     
     func clear() {
         typeInstances.removeAll()
+        supplementaryViewTypeInstances.removeAll()
     }
     
     func renew() {
+        //var registeredCells = fastAdapter?.listView?.registeredCells
         for (typeId, item) in typeInstances {
-            _register(typeId: typeId, item: item)
+            //if registeredCells == nil || registeredCells?.contains(typeId) == false {
+            //    if registeredCells == nil {
+            //        registeredCells = Set<String>()
+            //    }
+            //    registeredCells?.insert(typeId)
+                _register(typeId: typeId, item: item)
+            //}
+        }
+        //fastAdapter?.listView?.registeredCells = registeredCells
+        for (kind, typeInstances) in supplementaryViewTypeInstances {
+            for (typeId, item) in typeInstances {
+                _register(typeId: typeId, item: item, forSupplementaryViewOfKind: kind)
+            }
         }
     }
 }

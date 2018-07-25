@@ -21,6 +21,9 @@ open class Measurer<Itm: Item> {
     }
     
     open func measureItem(item: Itm, width: CGFloat?, height: CGFloat?) -> Bool {
+        if width == nil && height == nil {
+            return false
+        }
         return item.onMeasure(width: width, height: nil)
     }
     

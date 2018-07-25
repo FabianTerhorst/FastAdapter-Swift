@@ -6,10 +6,10 @@
 //  Copyright © 2018 everHome. All rights reserved.
 //
 
-public class ItemList<Itm: Item> {
+open class ItemList<Itm: Item> {
     weak var fastAdapter: FastAdapter<Itm>?
     
-    var sections = [Section<Itm>]()
+    public var sections = [Section<Itm>]()
     
     var subItemCount = [Int : [Int : Int]]()
     
@@ -25,17 +25,15 @@ public class ItemList<Itm: Item> {
     }
     
     public func add(section: Int = 0, item: Itm) {
-        if let listView = fastAdapter?.listView {
-            let frame = listView.frame
-            fastAdapter?.backgroundLayoutQueue.addOperation {
-                [weak self] in
-                if self?.fastAdapter?.measurer.measureItem(item: item, width: frame.width, height: frame.height) == true {
-                    DispatchQueue.main.sync {
-                        let _ = self?.fastAdapter?.typeInstanceCache.register(item: item)
-                        self?[section].items.append(item)
-                        if let count = self?[section].items.count, count > 0  {
-                            listView.insertItems(at: [IndexPath(row: count - 1, section: section)])
-                        }
+        let frame = getFrame()
+        addOperation {
+            [weak self] in
+            if self?.fastAdapter?.measurer.measureItem(item: item, width: frame?.width, height: frame?.height) == true {
+                ItemList<Itm>.main {
+                    let _ = self?.fastAdapter?.typeInstanceCache.register(item: item)
+                    self?[section].items.append(item)
+                    if let count = self?[section].items.count, count > 0  {
+                        self?.fastAdapter?.notifier.insertItems(at: [IndexPath(row: count - 1, section: section)])
                     }
                 }
             }
@@ -43,142 +41,128 @@ public class ItemList<Itm: Item> {
     }
     
     public func add(section: Int = 0, index: Int, item: Itm) {
-        if let listView = fastAdapter?.listView {
-            let frame = listView.frame
-            fastAdapter?.backgroundLayoutQueue.addOperation {
-                [weak self] in
-                if self?.fastAdapter?.measurer.measureItem(item: item, width: frame.width, height: frame.height) == true {
-                    DispatchQueue.main.sync {
-                        let _ = self?.fastAdapter?.typeInstanceCache.register(item: item)
-                        self?[section].items.insert(item, at: index)
-                        listView.insertItems(at: [IndexPath(row: index, section: section)])
-                    }
+        let frame = getFrame()
+        addOperation {
+            [weak self] in
+            if self?.fastAdapter?.measurer.measureItem(item: item, width: frame?.width, height: frame?.height) == true {
+                ItemList<Itm>.main {
+                    let _ = self?.fastAdapter?.typeInstanceCache.register(item: item)
+                    self?[section].items.insert(item, at: index)
+                    self?.fastAdapter?.notifier.insertItems(at: [IndexPath(row: index, section: section)])
                 }
             }
         }
     }
     
     public func addAll(section: Int = 0, items: [Itm]) {
-        if let listView = fastAdapter?.listView {
-            let frame = listView.frame
-            fastAdapter?.backgroundLayoutQueue.addOperation {
-                [weak self] in
-                var arrangedItems = [Itm]()
-                for item in items {
-                    if self?.fastAdapter?.measurer.measureItem(item: item, width: frame.width, height: frame.height) == true {
-                        arrangedItems.append(item)
-                    }
+        let frame = getFrame()
+        addOperation {
+            [weak self] in
+            var arrangedItems = [Itm]()
+            for item in items {
+                if self?.fastAdapter?.measurer.measureItem(item: item, width: frame?.width, height: frame?.height) == true {
+                    arrangedItems.append(item)
                 }
-                DispatchQueue.main.sync {
-                    var indexPaths = [IndexPath]()
-                    if var index = self?[section].items.count {
-                        for item in arrangedItems {
-                            let _ = self?.fastAdapter?.typeInstanceCache.register(item: item)
-                            self?[section].items.append(item)
-                            indexPaths.append(IndexPath(row: index, section: section))
-                            index += 1
-                        }
-                        listView.insertItems(at: indexPaths)
+            }
+            ItemList<Itm>.main {
+                var indexPaths = [IndexPath]()
+                if var index = self?[section].items.count {
+                    for item in arrangedItems {
+                        let _ = self?.fastAdapter?.typeInstanceCache.register(item: item)
+                        self?[section].items.append(item)
+                        indexPaths.append(IndexPath(row: index, section: section))
+                        index += 1
                     }
+                    self?.fastAdapter?.notifier.insertItems(at: indexPaths)
                 }
             }
         }
     }
     
     public func addAll(section: Int = 0, index: Int, items: [Itm]) {
-        if let listView = fastAdapter?.listView {
-            let frame = listView.frame
-            fastAdapter?.backgroundLayoutQueue.addOperation {
-                [weak self] in
-                var arrangedItems = [Itm]()
-                for item in items {
-                    if self?.fastAdapter?.measurer.measureItem(item: item, width: frame.width, height: frame.height) == true {
-                        arrangedItems.append(item)
-                    }
+        let frame = getFrame()
+        addOperation {
+            [weak self] in
+            var arrangedItems = [Itm]()
+            for item in items {
+                if self?.fastAdapter?.measurer.measureItem(item: item, width: frame?.width, height: frame?.height) == true {
+                    arrangedItems.append(item)
                 }
-                DispatchQueue.main.sync {
-                    var indexPaths = [IndexPath]()
-                    var index = index
-                    for item in arrangedItems {
-                        let _ = self?.fastAdapter?.typeInstanceCache.register(item: item)
-                        self?[section].items.insert(item, at: index)
-                        indexPaths.append(IndexPath(row: index, section: section))
-                        index += 1
-                    }
-                    listView.insertItems(at: indexPaths)
+            }
+            ItemList<Itm>.main {
+                var indexPaths = [IndexPath]()
+                var index = index
+                for item in arrangedItems {
+                    let _ = self?.fastAdapter?.typeInstanceCache.register(item: item)
+                    self?[section].items.insert(item, at: index)
+                    indexPaths.append(IndexPath(row: index, section: section))
+                    index += 1
                 }
+                self?.fastAdapter?.notifier.insertItems(at: indexPaths)
             }
         }
     }
     
-    public func set(section: Int = 0, items: [Itm]) {
-        if let listView = fastAdapter?.listView {
-            let frame = listView.frame
-            fastAdapter?.backgroundLayoutQueue.addOperation {
-                [weak self] in
-                var arrangedItems = [Itm]()
-                for item in items {
-                    if self?.fastAdapter?.measurer.measureItem(item: item, width: frame.width, height: frame.height) == true {
-                        arrangedItems.append(item)
-                    }
+    open func set(section: Int = 0, items: [Itm]) {
+        let frame = getFrame()
+        addOperation {
+            [weak self] in
+            var arrangedItems = [Itm]()
+            for item in items {
+                if self?.fastAdapter?.measurer.measureItem(item: item, width: frame?.width, height: frame?.height) == true {
+                    arrangedItems.append(item)
                 }
-                DispatchQueue.main.sync {
-                    for item in arrangedItems {
-                        let _ = self?.fastAdapter?.typeInstanceCache.register(item: item)
-                    }
-                    self?[section].items = arrangedItems
-                    listView.reloadSections(IndexSet(integer: section))
+            }
+            ItemList<Itm>.main {
+                for item in arrangedItems {
+                    let _ = self?.fastAdapter?.typeInstanceCache.register(item: item)
                 }
+                self?[section].items = arrangedItems
+                self?.fastAdapter?.notifier.reloadSection(section: section)
             }
         }
     }
     
     public func update(section: Int = 0, index: Int) {
-        if let listView = fastAdapter?.listView {
-            let item = self[section].items[index]
-            let frame = listView.frame
-            fastAdapter?.backgroundLayoutQueue.addOperation {
-                [weak self] in
-                if self?.fastAdapter?.measurer.measureItem(item: item, width: frame.width, height: frame.height) == true {
-                    DispatchQueue.main.sync {
-                        listView.reloadItems(at: [IndexPath(row: index, section: section)])
-                    }
+        let item = self[section].items[index]
+        let frame = getFrame()
+        addOperation {
+            [weak self] in
+                if self?.fastAdapter?.measurer.measureItem(item: item, width: frame?.width, height: frame?.height) == true {
+                ItemList<Itm>.main {
+                    self?.fastAdapter?.notifier.reloadItems(at: [IndexPath(row: index, section: section)])
                 }
             }
         }
     }
     
     public func updateAll(section: Int = 0) {
-        if let listView = fastAdapter?.listView {
-            let frame = listView.frame
-            let items = self[section].items
-            fastAdapter?.backgroundLayoutQueue.addOperation {
-                [weak self] in
-                for item in items {
-                    let _ = self?.fastAdapter?.measurer.measureItem(item: item, width: frame.width, height: frame.height)
+        let frame = getFrame()
+        let items = self[section].items
+        addOperation {
+            [weak self] in
+            for item in items {
+                let _ = self?.fastAdapter?.measurer.measureItem(item: item, width: frame?.width, height: frame?.height)
+            }
+            var indexPaths = [IndexPath]()
+            ItemList<Itm>.main {
+                for i in 0..<items.count {
+                    indexPaths.append(IndexPath(row: i, section: section))
                 }
-                var indexPaths = [IndexPath]()
-                DispatchQueue.main.sync {
-                    for i in 0..<items.count {
-                        indexPaths.append(IndexPath(row: i, section: section))
-                    }
-                    listView.reloadItems(at: indexPaths)
-                }
+                self?.fastAdapter?.notifier.reloadItems(at: indexPaths)
             }
         }
     }
     
     public func set(section: Int = 0, index: Int, item: Itm) {
-        if let listView = fastAdapter?.listView {
-            let frame = listView.frame
-            fastAdapter?.backgroundLayoutQueue.addOperation {
-                [weak self] in
-                if self?.fastAdapter?.measurer.measureItem(item: item, width: frame.width, height: frame.height) == true {
-                    self?[section].items[index] = item
-                    DispatchQueue.main.sync {
-                        let _ = self?.fastAdapter?.typeInstanceCache.register(item: item)
-                        listView.reloadItems(at: [IndexPath(row: index, section: section)])
-                    }
+        let frame = getFrame()
+        addOperation {
+            [weak self] in
+            if self?.fastAdapter?.measurer.measureItem(item: item, width: frame?.width, height: frame?.height) == true {
+                self?[section].items[index] = item
+                ItemList<Itm>.main {
+                    let _ = self?.fastAdapter?.typeInstanceCache.register(item: item)
+                    self?.fastAdapter?.notifier.reloadItems(at: [IndexPath(row: index, section: section)])
                 }
             }
         }
@@ -189,54 +173,40 @@ public class ItemList<Itm: Item> {
             return
         }
         self[section].items.remove(at: position)
-        if let listView = fastAdapter?.listView {
-            listView.performBatchUpdates({
-                listView.deleteItems(at: [IndexPath(row: position, section: section)])
-            }, completion: {
-                finished in
-                listView.reloadSections(IndexSet(integer: section))
-            })
-        }
+        self.fastAdapter?.notifier.deleteItems(in: section, at: [IndexPath(row: position, section: section)])
     }
     
     public func setHeader(section: Int = 0, item: Itm) {
-        if let listView = fastAdapter?.listView {
-            let frame = listView.frame
-            fastAdapter?.backgroundLayoutQueue.addOperation {
-                [weak self] in
-                if self?.fastAdapter?.measurer.measureItem(item: item, width: frame.width, height: frame.height) != nil {
-                    DispatchQueue.main.sync {
-                        let _ = self?.fastAdapter?.typeInstanceCache.register(item: item)
-                        self?[section].header = item
-                        listView.reloadSections(IndexSet(integer: section))
-                    }
+        let frame = getFrame()
+        addOperation {
+            [weak self] in
+            if self?.fastAdapter?.measurer.measureItem(item: item, width: frame?.width, height: frame?.height) != nil {
+                ItemList<Itm>.main {
+                    let _ = self?.fastAdapter?.typeInstanceCache.register(item: item, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader)
+                    self?[section].header = item
+                    self?.fastAdapter?.notifier.reloadSection(section: section)
                 }
             }
         }
     }
     
     public func setFooter(section: Int = 0, item: Itm) {
-        if let listView = fastAdapter?.listView {
-            let frame = listView.frame
-            fastAdapter?.backgroundLayoutQueue.addOperation {
-                [weak self] in
-                if self?.fastAdapter?.measurer.measureItem(item: item, width: frame.width, height: frame.height) != nil {
-                    DispatchQueue.main.sync {
-                        let _ = self?.fastAdapter?.typeInstanceCache.register(item: item)
-                        self?[section].footer = item
-                        listView.reloadSections(IndexSet(integer: section))
-                    }
+        let frame = getFrame()
+        addOperation {
+            [weak self] in
+            if self?.fastAdapter?.measurer.measureItem(item: item, width: frame?.width, height: frame?.height) != nil {
+                ItemList<Itm>.main {
+                    let _ = self?.fastAdapter?.typeInstanceCache.register(item: item, forSupplementaryViewOfKind: UICollectionElementKindSectionFooter)
+                    self?[section].footer = item
+                    self?.fastAdapter?.notifier.reloadSection(section: section)
                 }
             }
         }
     }
     
     public func expand(section: Int = 0, index: Int) {
-        guard let fastAdapter = fastAdapter, let listView = fastAdapter.listView else {
-            return
-        }
-        let frame = listView.frame
-        fastAdapter.backgroundLayoutQueue.addOperation {
+        let frame = getFrame()
+        addOperation {
             [weak self] in
             let item = self?.sections[section].items[index]
             guard var expandable = item as? Expandable, !expandable.expanded else {
@@ -245,7 +215,7 @@ public class ItemList<Itm: Item> {
             guard let fastAdapter = self?.fastAdapter else {
                 return
             }
-            guard let measuredSubItems = expandable.getMeasuredSubItems(measurer: fastAdapter.measurer, width: frame.width, height: frame.height), measuredSubItems.count > 0 else {
+            guard let measuredSubItems = expandable.getMeasuredSubItems(measurer: fastAdapter.measurer, width: frame?.width, height: frame?.height), measuredSubItems.count > 0 else {
                 return
             }
             expandable.expanded = true
@@ -265,7 +235,7 @@ public class ItemList<Itm: Item> {
                 }
             }
             self?.subItemCount[section]?[index] = measuredSubItemsCount
-            DispatchQueue.main.sync {
+            ItemList<Itm>.main {
                 var indexPaths = [IndexPath]()
                 var index = index + 1
                 for item in measuredSubItems {
@@ -274,7 +244,7 @@ public class ItemList<Itm: Item> {
                     indexPaths.append(IndexPath(row: index, section: section))
                     index += 1
                 }
-                listView.insertItems(at: indexPaths)
+                self?.fastAdapter?.notifier.insertItems(at: indexPaths)
             }
         }
     }
@@ -286,10 +256,7 @@ public class ItemList<Itm: Item> {
         guard var count = subItemCount[section]?[index], count > 0 else {
             return
         }
-        guard let fastAdapter = fastAdapter, let listView = fastAdapter.listView else {
-            return
-        }
-        fastAdapter.backgroundLayoutQueue.addOperation {
+        addOperation {
             [weak self] in
             let item = self?.sections[section].items[index]
             guard var expandable = item as? Expandable, expandable.expanded else {
@@ -314,17 +281,12 @@ public class ItemList<Itm: Item> {
             }
             self?.sections[section].items.removeSubrange(index + 1...index + count)
             self?.subItemCount[section]?.removeValue(forKey: index)
-            DispatchQueue.main.sync {
+            ItemList<Itm>.main {
                 var indexPaths = [IndexPath]()
                 for i in 1...count {
                     indexPaths.append(IndexPath(row: index + i, section: section))
                 }
-                listView.performBatchUpdates({
-                    listView.deleteItems(at: indexPaths)
-                }, completion: {
-                    finished in
-                    listView.reloadSections(IndexSet(integer: section))
-                })
+                self?.fastAdapter?.notifier.deleteItems(in: section, at: indexPaths)
             }
         }
     }
@@ -351,6 +313,33 @@ public class ItemList<Itm: Item> {
             }
         }
         return newIndex
+    }
+    
+    open func addOperation(_ block: @escaping () -> Void) {
+        fastAdapter?.backgroundLayoutQueue.addOperation(block)
+    }
+    
+    static func main(_ block: () -> Void) {
+        if Thread.current.isMainThread {
+            block()
+        } else {
+            DispatchQueue.main.sync(execute: block)
+        }
+    }
+    
+    open func getFrame() -> CGRect? {
+        let listView = fastAdapter?.listView
+        if Thread.current.isMainThread {
+            return listView?.frame
+        } else {
+            let frame = DispatchQueue.main.sync {
+                return listView?.frame ?? CGRect.zero
+            }
+            if frame.width == 0 && frame.height == 0 {
+                return nil
+            }
+            return frame
+        }
     }
 }
 

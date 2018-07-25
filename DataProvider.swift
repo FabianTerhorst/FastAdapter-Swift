@@ -53,7 +53,7 @@ open class DataProvider<Itm: Item>: DataProviderWrapper {
             assertionFailure("unknown supplementary view kind \(kind)")
         }
         // Last resort, should never happen
-        if let firstType = fastAdapter?.typeInstanceCache.typeInstances.first {
+        if let firstType = fastAdapter?.typeInstanceCache.supplementaryViewTypeInstances[kind]?.first {
             let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: firstType.key, for: indexPath)
             return view
         }

@@ -43,6 +43,11 @@ public class FastAdapter<Itm: Item> {
             measurer.fastAdapter = self
         }
     }
+    public var notifier: Notifier<Itm> {
+        didSet {
+            notifier.fastAdapter = self
+        }
+    }
     var listView: UICollectionView? {
         didSet {
             typeInstanceCache.renew()
@@ -56,12 +61,15 @@ public class FastAdapter<Itm: Item> {
     
     public init(dataProvider: DataProvider<Itm> = DataProvider<Itm>(),
                 typeInstanceCache: TypeInstanceCache<Itm> = TypeInstanceCache<Itm>(),
-                measurer: Measurer<Itm> = Measurer<Itm>()) {
+                measurer: Measurer<Itm> = Measurer<Itm>(),
+                notifier: Notifier<Itm> = Notifier<Itm>()) {
         self.dataProvider = dataProvider
         self.typeInstanceCache = typeInstanceCache
         self.measurer = measurer
+        self.notifier = notifier
         self.dataProvider.fastAdapter = self
         self.typeInstanceCache.fastAdapter = self
         self.measurer.fastAdapter = self
+        self.notifier.fastAdapter = self
     }
 }

@@ -10,7 +10,7 @@ public class ModelAdapter<Model, Itm: Item>: Adapter<Itm> {
     
     private let interceptor: (Model) -> (Itm?)
     
-    public init(interceptor: @escaping (Model) -> (Itm?), itemList: ItemList<Itm> = ItemList<Itm>()) {
+    public init(itemList: ItemList<Itm> = ItemList<Itm>(), interceptor: @escaping (Model) -> (Itm?)) {
         self.interceptor = interceptor
         super.init()
         self.itemList = itemList

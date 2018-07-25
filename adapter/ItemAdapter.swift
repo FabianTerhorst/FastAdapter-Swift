@@ -8,9 +8,9 @@
 
 public class ItemAdapter<Itm: Item>: ModelAdapter<Itm, Itm> {
     public init(itemList: ItemList<Itm> = ItemList<Itm>()) {
-        super.init(interceptor: {
+        super.init(itemList: itemList) {
             item in
             return item
-        }, itemList: itemList)
+        }
     }
 }

@@ -3,7 +3,6 @@
 ### Features
 - expandable items
 - layoutkit support
-- event hooks
 - footer, header items
 - multi sections
 - background measuring

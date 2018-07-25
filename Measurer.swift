@@ -9,8 +9,10 @@
 open class Measurer<Itm: Item> {
     public weak var fastAdapter: FastAdapter<Itm>?
     
-    public init() {
-        
+    public let interceptor: (CGFloat?, CGFloat?) -> (CGFloat?, CGFloat?, Bool)
+    
+    public init(interceptor: ((CGFloat?, CGFloat?) -> (CGFloat?, CGFloat?, Bool))? = nil) {
+        self.interceptor = interceptor ?? MeasurerDefaults.defaultInterceptor
     }
     
     open func measureItem(item: Itm) -> Bool {
@@ -24,10 +26,11 @@ open class Measurer<Itm: Item> {
         if let fastAdapter = fastAdapter as? FastAdapter<Item> {
             item.fastAdapter = fastAdapter
         }
-        if width == nil && height == nil {
+        let (interceptedWidth, interceptedHeight, keep) = interceptor(width, height)
+        if !keep {
             return false
         }
-        return item.onMeasure(width: width, height: nil)
+        return item.onMeasure(width: interceptedWidth, height: interceptedHeight)
     }
     
     open func renew() {
@@ -65,5 +68,12 @@ open class Measurer<Itm: Item> {
             }
             fastAdapter?.listView?.reloadData()
         }
+    }
+}
+
+class MeasurerDefaults {
+    public static let defaultInterceptor = {
+        (width: CGFloat?, height: CGFloat?) -> (CGFloat?, CGFloat?, Bool) in
+        return (width, nil, (width == nil && height == nil) ? false : true)
     }
 }

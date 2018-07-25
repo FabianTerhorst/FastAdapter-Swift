@@ -53,6 +53,7 @@ public class FastAdapter<Itm: Item> {
             typeInstanceCache.renew()
         }
     }
+    public let eventHooks = EventHooks<Itm>()
     public var adapter: Adapter<Itm>? {
         didSet {
             adapter?.fastAdapter = self

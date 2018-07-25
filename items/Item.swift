@@ -7,6 +7,9 @@
 //
 
 open class Item {
+    
+    public weak var fastAdapter: FastAdapter<Item>?
+    
     open func getType() -> String {
         return String(describing: type(of: self))
     }

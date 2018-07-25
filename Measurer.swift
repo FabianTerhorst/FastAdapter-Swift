@@ -14,13 +14,16 @@ open class Measurer<Itm: Item> {
     }
     
     open func measureItem(item: Itm) -> Bool {
-        if let collectionView = fastAdapter?.listView {
-            return measureItem(item: item, width: collectionView.frame.width, height: collectionView.frame.height)
+        guard let collectionView = fastAdapter?.listView else {
+            return false
         }
-        return false
+        return measureItem(item: item, width: collectionView.frame.width, height: collectionView.frame.height)
     }
     
     open func measureItem(item: Itm, width: CGFloat?, height: CGFloat?) -> Bool {
+        if let fastAdapter = fastAdapter as? FastAdapter<Item> {
+            item.fastAdapter = fastAdapter
+        }
         if width == nil && height == nil {
             return false
         }

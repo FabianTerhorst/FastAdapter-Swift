@@ -23,7 +23,7 @@ open class DataProvider<Itm: Item>: DataProviderWrapper {
     override public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if let item = fastAdapter?.adapter?.itemList[indexPath.section].items[indexPath.row] {
             var cell = collectionView.dequeueReusableCell(withReuseIdentifier: item.getType(), for: indexPath)
-            item.onBind(cell: &cell)
+            item.onBind(indexPath: indexPath, cell: &cell)
             return cell
         }
         // Last resort, should never happen
@@ -40,13 +40,13 @@ open class DataProvider<Itm: Item>: DataProviderWrapper {
         case UICollectionElementKindSectionHeader:
             if let item = fastAdapter?.adapter?.itemList[indexPath.section].header {
                 var view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: item.getType(), for: indexPath)
-                item.onBind(view: &view)
+                item.onBind(indexPath: indexPath, view: &view)
                 return view
             }
         case UICollectionElementKindSectionFooter:
             if let item = fastAdapter?.adapter?.itemList[indexPath.section].footer {
                 var view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: item.getType(), for: indexPath)
-                item.onBind(view: &view)
+                item.onBind(indexPath: indexPath, view: &view)
                 return view
             }
         default:

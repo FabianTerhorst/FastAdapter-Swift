@@ -14,13 +14,15 @@ open class LayoutItem: Item {
     // Needed for animation
     //weak var contentView: UIView?
     
-    private var arrangement: LayoutArrangement?
+    public var arrangement: LayoutArrangement?
     
-    open override func onBind(cell: inout UICollectionViewCell) {
+    open override func onBind(indexPath: IndexPath, cell: inout UICollectionViewCell) {
+        super.onBind(indexPath: indexPath, cell: &cell)
         arrangement?.makeViews(in: cell.contentView)
     }
     
-    open override func onBind(view: inout UICollectionReusableView) {
+    open override func onBind(indexPath: IndexPath, view: inout UICollectionReusableView) {
+        super.onBind(indexPath: indexPath, view: &view)
         arrangement?.makeViews(in: view)
     }
     

@@ -10,7 +10,7 @@ public protocol Hookable: class {
 }
 
 public extension Hookable where Self: Item {
-    func event(event: Event) {
+    func event(_ event: Event) {
         fastAdapter?.eventHooks.call(item: self, event: event)
     }
 }

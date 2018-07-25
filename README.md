@@ -103,7 +103,7 @@ public extension Events {
 
 class SampleEventHookItem: Item, Hookable {
     func someFunction() {
-        self.event(event: .close)
+        self.event(.close)
     }
 }
 
@@ -131,7 +131,7 @@ class MyCustomEvent: Event {
 
 class SampleEventHookItem: Item, Hookable {
     func someFunction() {
-        self.event(event: MyCustomEvent(data: data))
+        self.event(MyCustomEvent(data: data))
     }
 }
 

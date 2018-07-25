@@ -194,7 +194,6 @@ open class ItemList<Itm: Item> {
         let frame = getFrame()
         addOperation {
             [weak self] in
-            if self?.fastAdapter?.measurer.measureItem(item: item, width: frame?.width, height: frame?.height) != nil {
             if self?.fastAdapter?.measurer.measureItem(item: item, width: frame?.width, height: frame?.height) == true {
                 ItemList<Itm>.main {
                     let _ = self?.fastAdapter?.typeInstanceCache.register(item: item, forSupplementaryViewOfKind: UICollectionElementKindSectionFooter)

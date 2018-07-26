@@ -11,10 +11,10 @@ import struct LayoutKit.LayoutArrangement
 import protocol LayoutKit.Layout
 
 public extension FastAdapter {
-    func with(collectionView: UICollectionView) {
-        collectionView.dataSource = dataProvider
-        collectionView.delegate = dataProvider
-        listView = collectionView
+    func with(listView: ListView) {
+        listView.setListViewDelegate(delegate: dataProvider)
+        listView.setListViewDataSource(dataSource: dataProvider)
+        self.listView = listView
     }
 }
 

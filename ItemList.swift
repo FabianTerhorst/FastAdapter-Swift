@@ -124,7 +124,11 @@ open class ItemList<Itm: Item> {
     }
     
     public func update(section: Int = 0, index: Int) {
-        let item = self[section].items[index]
+        let sectionItems = self[section].items
+        if sectionItems.count <= index {
+            return
+        }
+        let item = sectionItems[index]
         let frame = getFrame()
         addOperation {
             [weak self] in

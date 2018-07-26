@@ -77,6 +77,14 @@ open class DataProvider<Itm: Item>: DataProviderWrapper {
     public override func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
         return fastAdapter?.adapter?.itemList[section].footer?.getSize() ?? .zero
     }
+    
+    public override func collectionView(_ collectionView: UICollectionView, canMoveItemAt indexPath: IndexPath) -> Bool {
+        return (fastAdapter?.adapter?.itemList[indexPath.section].items[indexPath.row] as? Draggable)?.isDraggable ?? false
+    }
+    
+    public override func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+        fastAdapter?.adapter?.itemList.move(source: sourceIndexPath, destination: destinationIndexPath)
+    }
 }
 
 open class DataProviderWrapper: NSObject {
@@ -116,5 +124,13 @@ extension DataProviderWrapper: UICollectionViewDelegateFlowLayout {
     
     public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
         return .zero
+    }
+    
+    public func collectionView(_ collectionView: UICollectionView, canMoveItemAt indexPath: IndexPath) -> Bool {
+        return false
+    }
+    
+    public func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+        
     }
 }

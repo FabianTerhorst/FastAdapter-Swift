@@ -323,6 +323,11 @@ open class ItemList<Itm: Item> {
         }
     }
     
+    public func move(source: IndexPath, destination: IndexPath) {
+        let item = self[source.section].items.remove(at: source.row)
+        self[destination.section].items.insert(item, at: destination.row)
+    }
+    
     public func clear() {
         for (sectionIndex, section) in sections.enumerated() {
             _clearSection(sectionIndex: sectionIndex, section: section)

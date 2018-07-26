@@ -8,13 +8,13 @@
 - background measuring
 - modularity
 - event hooks
+- drag and drop
 
 ### TODO
 - auto collapsing for expandable
 - multi adapter support
 - click listener
 - selectable, selection, multiselection
-- drag, drop
 - filter
 - split layoutkit items to different module
 - add extension modules (endless scroll, waterfall layout)

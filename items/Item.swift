@@ -22,10 +22,10 @@ open class Item {
         return nil
     }
     
-    open func onBind(indexPath: IndexPath, cell: inout UICollectionViewCell) {
+    open func onBind(indexPath: IndexPath, cell: inout ListViewCell) {
     }
     
-    open func onBind(indexPath: IndexPath, view: inout UICollectionReusableView) {
+    open func onBind(indexPath: IndexPath, view: inout (UIView & ListViewReusableView)) {
     }
     
     /**

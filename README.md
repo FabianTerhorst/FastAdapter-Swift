@@ -9,6 +9,7 @@
 - modularity
 - event hooks
 - drag and drop
+- collection and table view support
 
 ### TODO
 - auto collapsing for expandable
@@ -22,6 +23,7 @@
 ### Untested
 - expandable with more then one depth
 - items without using layoutkit
+- table view support
 
 ```swift
 class DeviceItem: ModelLayoutItem<Device> {

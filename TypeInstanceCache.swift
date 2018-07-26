@@ -43,9 +43,9 @@ public class TypeInstanceCache<Itm: Item> {
     private func _register(typeId: String, item: Itm) {
         if let listView = fastAdapter?.listView {
             if let nib = item.getNib() {
-                listView.register(nib, forCellWithReuseIdentifier: typeId)
+                listView.registerCell(nib, forCellWithReuseIdentifier: typeId)
             } else {
-                listView.register(item.getCell(), forCellWithReuseIdentifier: typeId)
+                listView.registerCell(item.getCell(), forCellWithReuseIdentifier: typeId)
             }
         }
     }
@@ -53,9 +53,9 @@ public class TypeInstanceCache<Itm: Item> {
     private func _register(typeId: String, item: Itm, forSupplementaryViewOfKind: String) {
         if let listView = fastAdapter?.listView {
             if let nib = item.getNib() {
-                listView.register(nib, forSupplementaryViewOfKind: forSupplementaryViewOfKind, withReuseIdentifier: typeId)
+                listView.registerCell(nib, forSupplementaryViewOfKind: forSupplementaryViewOfKind, withReuseIdentifier: typeId)
             } else {
-                listView.register(item.getCell(), forSupplementaryViewOfKind: forSupplementaryViewOfKind, withReuseIdentifier: typeId)
+                listView.registerCell(item.getCell(), forSupplementaryViewOfKind: forSupplementaryViewOfKind, withReuseIdentifier: typeId)
             }
         }
     }

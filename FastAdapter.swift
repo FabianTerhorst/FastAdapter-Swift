@@ -29,8 +29,8 @@ public class FastAdapter<Itm: Item> {
     public var dataProvider: DataProvider<Itm> {
         didSet {
             dataProvider.fastAdapter = self
-            listView?.dataSource = dataProvider
-            listView?.delegate = dataProvider
+            listView?.setListViewDelegate(delegate: dataProvider)
+            listView?.setListViewDataSource(dataSource: dataProvider)
         }
     }
     public var typeInstanceCache: TypeInstanceCache<Itm> {
@@ -48,7 +48,7 @@ public class FastAdapter<Itm: Item> {
             notifier.fastAdapter = self
         }
     }
-    var listView: UICollectionView? {
+    public var listView: ListView? {
         didSet {
             typeInstanceCache.renew()
         }

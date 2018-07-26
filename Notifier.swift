@@ -28,7 +28,7 @@ open class Notifier<Itm: Item> {
         guard let listView = fastAdapter?.listView else {
             return
         }
-        listView.performBatchUpdates({
+        listView.performListViewBatchUpdates({
             listView.deleteItems(at: indexPaths)
         }, completion: {
             finished in

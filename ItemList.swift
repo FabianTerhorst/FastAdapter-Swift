@@ -208,6 +208,23 @@ open class ItemList<Itm: Item> {
         }
     }
     
+    public func setSupplementary(item: Itm, ofKind kind: String, in section: Int = 0) {
+        let frame = getFrame()
+        addOperation {
+            [weak self] in
+            if self?.fastAdapter?.measurer.measureItem(item: item, width: frame?.width, height: frame?.height) == true {
+                ItemList<Itm>.main {
+                    let _ = self?.fastAdapter?.typeInstanceCache.register(item: item, forSupplementaryViewOfKind: kind)
+                    if self?[section].supplementaryItems == nil {
+                        self?[section].supplementaryItems = [String: Itm]()
+                    }
+                    self?[section].supplementaryItems?[kind] = item
+                    self?.fastAdapter?.notifier.reloadSection(section: section)
+                }
+            }
+        }
+    }
+    
     public func expand(section: Int = 0, index: Int) {
         let frame = getFrame()
         addOperation {

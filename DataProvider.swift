@@ -50,6 +50,11 @@ open class DataProvider<Itm: Item>: DataProviderWrapper {
                 return view
             }
         default:
+            if let item = fastAdapter?.adapter?.itemList[indexPath.section].supplementaryItems?[kind] {
+                var view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: item.getType(), for: indexPath)
+                item.onBind(indexPath: indexPath, view: &view)
+                return view
+            }
             assertionFailure("unknown supplementary view kind \(kind)")
         }
         // Last resort, should never happen

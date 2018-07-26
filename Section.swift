@@ -11,11 +11,13 @@ public class Section<Itm: Item> {
     public var header: Itm?
     public var items: [Itm]
     public var footer: Itm?
+    public var supplementaryItems: [String: Itm]?
     
-    public init(header: Itm? = nil, items: [Itm], footer: Itm? = nil) {
+    public init(header: Itm? = nil, items: [Itm], footer: Itm? = nil, supplementaryItems: [String: Itm]? = nil) {
         self.header = header
         self.items = items
         self.footer = footer
+        self.supplementaryItems = supplementaryItems
     }
     
     public func map(_ mapper: (Itm) -> Itm) {

@@ -9,6 +9,8 @@
 public protocol ListView: class {
     var frame: CGRect { get }
     
+    var allowsMultipleSelection: Bool { get set }
+    
     func setListViewDelegate(delegate: DataProviderWrapper)
     
     func setListViewDataSource(dataSource: DataProviderWrapper)
@@ -56,7 +58,7 @@ extension UICollectionView: ListView {
     }
     
     public func registerCell(_ viewClass: AnyClass?, forSupplementaryViewOfKind elementKind: String, withReuseIdentifier identifier: String) {
-        register(viewClass, forSupplementaryViewOfKind: elementKind, withReuseIdentifier: identifier)
+        register(viewClass ?? UICollectionViewCell.self, forSupplementaryViewOfKind: elementKind, withReuseIdentifier: identifier)
     }
     
     public func registerCell(_ nib: UINib?, forSupplementaryViewOfKind kind: String, withReuseIdentifier identifier: String) {
@@ -64,7 +66,7 @@ extension UICollectionView: ListView {
     }
     
     public func registerCell(_ cellClass: AnyClass?, forCellWithReuseIdentifier identifier: String) {
-        register(cellClass, forCellWithReuseIdentifier: identifier)
+        register(cellClass ?? UICollectionViewCell.self, forCellWithReuseIdentifier: identifier)
     }
     
     public func registerCell(_ nib: UINib?, forCellWithReuseIdentifier identifier: String) {
@@ -94,7 +96,7 @@ extension UITableView: ListView {
     }
     
     public func registerCell(_ cellClass: AnyClass?, forCellWithReuseIdentifier identifier: String) {
-        register(cellClass, forCellReuseIdentifier: identifier)
+        register(cellClass ?? UITableViewCell.self, forCellReuseIdentifier: identifier)
     }
     
     public func registerCell(_ nib: UINib?, forCellWithReuseIdentifier identifier: String) {
@@ -102,7 +104,7 @@ extension UITableView: ListView {
     }
     
     public func registerCell(_ viewClass: AnyClass?, forSupplementaryViewOfKind elementKind: String, withReuseIdentifier identifier: String) {
-        register(viewClass, forHeaderFooterViewReuseIdentifier: identifier)
+        register(viewClass ?? UITableViewHeaderFooterView.self, forHeaderFooterViewReuseIdentifier: identifier)
     }
     
     public func registerCell(_ nib: UINib?, forSupplementaryViewOfKind kind: String, withReuseIdentifier identifier: String) {

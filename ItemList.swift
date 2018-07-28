@@ -18,10 +18,19 @@ open class ItemList<Itm: Item> {
     }
     
     public subscript(position: Int) -> Section<Itm> {
-        if sections.count <= position {
-            sections.append(Section<Itm>(header: nil, items: [Itm](), footer: nil))
-        }
         return sections[position]
+    }
+    
+    public func addSection(_ section: Section<Itm>, at sectionIndex: Int) {
+        if let listView = fastAdapter?.listView {
+            fastAdapter?.notifier.insert(listView, self, section: section, at: sectionIndex)
+        }
+    }
+    
+    public func deleteSection(at sectionIndex: Int) {
+        if let listView = fastAdapter?.listView {
+            fastAdapter?.notifier.delete(listView, self, sectionIndex: sectionIndex)
+        }
     }
     
     public func add(section: Int = 0, item: Itm) {
@@ -31,9 +40,8 @@ open class ItemList<Itm: Item> {
             if self?.fastAdapter?.measurer.measureItem(item: item, width: frame?.width, height: frame?.height) == true {
                 ItemList<Itm>.main {
                     let _ = self?.fastAdapter?.typeInstanceCache.register(item: item)
-                    self?[section].items.append(item)
-                    if let count = self?[section].items.count, count > 0  {
-                        self?.fastAdapter?.notifier.insertItems(at: [IndexPath(row: count - 1, section: section)])
+                    if let itemList = self, let listView = self?.fastAdapter?.listView {
+                        self?.fastAdapter?.notifier.insert(listView, itemList, items: [item], at: itemList[section].items.count, in: section)
                     }
                 }
             }
@@ -47,8 +55,9 @@ open class ItemList<Itm: Item> {
             if self?.fastAdapter?.measurer.measureItem(item: item, width: frame?.width, height: frame?.height) == true {
                 ItemList<Itm>.main {
                     let _ = self?.fastAdapter?.typeInstanceCache.register(item: item)
-                    self?[section].items.insert(item, at: index)
-                    self?.fastAdapter?.notifier.insertItems(at: [IndexPath(row: index, section: section)])
+                    if let itemList = self, let listView = self?.fastAdapter?.listView {
+                        self?.fastAdapter?.notifier.insert(listView, itemList, items: [item], at: index, in: section)
+                    }
                 }
             }
         }
@@ -65,15 +74,9 @@ open class ItemList<Itm: Item> {
                 }
             }
             ItemList<Itm>.main {
-                var indexPaths = [IndexPath]()
-                if var index = self?[section].items.count {
-                    for item in arrangedItems {
-                        let _ = self?.fastAdapter?.typeInstanceCache.register(item: item)
-                        self?[section].items.append(item)
-                        indexPaths.append(IndexPath(row: index, section: section))
-                        index += 1
-                    }
-                    self?.fastAdapter?.notifier.insertItems(at: indexPaths)
+                let _ = self?.fastAdapter?.typeInstanceCache.register(items: arrangedItems)
+                if let itemList = self, let listView = self?.fastAdapter?.listView {
+                    self?.fastAdapter?.notifier.insert(listView, itemList, items: arrangedItems, at: itemList[section].items.count, in: section)
                 }
             }
         }
@@ -90,15 +93,10 @@ open class ItemList<Itm: Item> {
                 }
             }
             ItemList<Itm>.main {
-                var indexPaths = [IndexPath]()
-                var index = index
-                for item in arrangedItems {
-                    let _ = self?.fastAdapter?.typeInstanceCache.register(item: item)
-                    self?[section].items.insert(item, at: index)
-                    indexPaths.append(IndexPath(row: index, section: section))
-                    index += 1
+                let _ = self?.fastAdapter?.typeInstanceCache.register(items: arrangedItems)
+                if let itemList = self, let listView = self?.fastAdapter?.listView {
+                    self?.fastAdapter?.notifier.insert(listView, itemList, items: arrangedItems, at: index, in: section)
                 }
-                self?.fastAdapter?.notifier.insertItems(at: indexPaths)
             }
         }
     }
@@ -114,11 +112,10 @@ open class ItemList<Itm: Item> {
                 }
             }
             ItemList<Itm>.main {
-                for item in arrangedItems {
-                    let _ = self?.fastAdapter?.typeInstanceCache.register(item: item)
+                let _ = self?.fastAdapter?.typeInstanceCache.register(items: arrangedItems)
+                if let itemList = self, let listView = self?.fastAdapter?.listView {
+                    self?.fastAdapter?.notifier.set(listView, itemList, items: arrangedItems, in: section)
                 }
-                self?[section].items = arrangedItems
-                self?.fastAdapter?.notifier.reloadSection(section: section)
             }
         }
     }
@@ -134,7 +131,9 @@ open class ItemList<Itm: Item> {
             [weak self] in
                 if self?.fastAdapter?.measurer.measureItem(item: item, width: frame?.width, height: frame?.height) == true {
                 ItemList<Itm>.main {
-                    self?.fastAdapter?.notifier.reloadItems(at: [IndexPath(row: index, section: section)])
+                    if let itemList = self, let listView = self?.fastAdapter?.listView {
+                        self?.fastAdapter?.notifier.update(listView, itemList, at: index, in: section)
+                    }
                 }
             }
         }
@@ -148,12 +147,10 @@ open class ItemList<Itm: Item> {
             for item in items {
                 let _ = self?.fastAdapter?.measurer.measureItem(item: item, width: frame?.width, height: frame?.height)
             }
-            var indexPaths = [IndexPath]()
             ItemList<Itm>.main {
-                for i in 0..<items.count {
-                    indexPaths.append(IndexPath(row: i, section: section))
+                if let itemList = self, let listView = self?.fastAdapter?.listView {
+                    self?.fastAdapter?.notifier.updateAll(listView, itemList, count: items.count, in: section)
                 }
-                self?.fastAdapter?.notifier.reloadItems(at: indexPaths)
             }
         }
     }
@@ -163,21 +160,20 @@ open class ItemList<Itm: Item> {
         addOperation {
             [weak self] in
             if self?.fastAdapter?.measurer.measureItem(item: item, width: frame?.width, height: frame?.height) == true {
-                self?[section].items[index] = item
                 ItemList<Itm>.main {
                     let _ = self?.fastAdapter?.typeInstanceCache.register(item: item)
-                    self?.fastAdapter?.notifier.reloadItems(at: [IndexPath(row: index, section: section)])
+                    if let itemList = self, let listView = self?.fastAdapter?.listView {
+                        self?.fastAdapter?.notifier.set(listView, itemList, item: item, at: index, in: section)
+                    }
                 }
             }
         }
     }
     
     public func remove(section: Int = 0, position: Int) {
-        if self[section].items.count <= position {
-            return
+        if let listView = fastAdapter?.listView {
+            fastAdapter?.notifier.delete(listView, self, count: 1, at: position, in: section)
         }
-        self[section].items.remove(at: position)
-        self.fastAdapter?.notifier.deleteItems(in: section, at: [IndexPath(row: position, section: section)])
     }
     
     public func setHeader(section: Int = 0, item: Itm) {
@@ -229,91 +225,35 @@ open class ItemList<Itm: Item> {
         let frame = getFrame()
         addOperation {
             [weak self] in
-            let item = self?.sections[section].items[index]
-            guard var expandable = item as? Expandable, !expandable.expanded else {
-                return
-            }
             guard let fastAdapter = self?.fastAdapter else {
                 return
             }
-            guard let measuredSubItems = expandable.getMeasuredSubItems(measurer: fastAdapter.measurer, width: frame?.width, height: frame?.height), measuredSubItems.count > 0 else {
+            guard let measuredSubItems = (self?.sections[section].items[index] as? Expandable)?.getMeasuredSubItems(measurer: fastAdapter.measurer, width: frame?.width, height: frame?.height), measuredSubItems.count > 0 else {
                 return
             }
-            expandable.expanded = true
-            let measuredSubItemsCount = measuredSubItems.count
-            if self?.subItemCount[section] == nil {
-                self?.subItemCount[section] = [Int : Int]()
-            } else {
-                // Count all keys up that higher then the current index
-                if let keys = self?.subItemCount[section]?.keys {
-                    for key in keys {
-                        if key > index {
-                            if let entry = self?.subItemCount[section]?.removeValue(forKey: key) {
-                                self?.subItemCount[section]?[key + measuredSubItemsCount] = entry
-                            }
-                        }
-                    }
-                }
-            }
-            self?.subItemCount[section]?[index] = measuredSubItemsCount
             ItemList<Itm>.main {
-                var indexPaths = [IndexPath]()
-                var index = index + 1
-                for item in measuredSubItems {
-                    let _ = fastAdapter.typeInstanceCache.register(item: item)
-                    self?[section].items.insert(item, at: index)
-                    indexPaths.append(IndexPath(row: index, section: section))
-                    index += 1
+                let _ = fastAdapter.typeInstanceCache.register(items: measuredSubItems)
+                if let itemList = self, let listView = self?.fastAdapter?.listView {
+                    self?.fastAdapter?.notifier.expand(listView, itemList, items: measuredSubItems, at: index, in: section)
                 }
-                self?.fastAdapter?.notifier.insertItems(at: indexPaths)
             }
         }
     }
     
     public func collapse(section: Int = 0, index: Int) {
-        if subItemCount[section]?.count ?? 0 <= section {
-            return
-        }
-        guard var count = subItemCount[section]?[index], count > 0 else {
-            return
-        }
-        addOperation {
-            [weak self] in
-            let item = self?.sections[section].items[index]
-            guard var expandable = item as? Expandable, expandable.expanded else {
-                return
-            }
-            expandable.expanded = false
-            // Checks if an sub item is also expanded
-            for i in index + 1...index + count {
-                if let subItemCount = self?.subItemCount[section]?[i] {
-                    count += subItemCount
-                }
-            }
-            // Count all keys down that are higher then the current index
-            if let keys = self?.subItemCount[section]?.keys {
-                for key in keys {
-                    if key > index {
-                        if let entry = self?.subItemCount[section]?.removeValue(forKey: key) {
-                            self?.subItemCount[section]?[key - count] = entry
-                        }
-                    }
-                }
-            }
-            self?.sections[section].items.removeSubrange(index + 1...index + count)
-            self?.subItemCount[section]?.removeValue(forKey: index)
-            ItemList<Itm>.main {
-                var indexPaths = [IndexPath]()
-                for i in 1...count {
-                    indexPaths.append(IndexPath(row: index + i, section: section))
-                }
-                self?.fastAdapter?.notifier.deleteItems(in: section, at: indexPaths)
+        ItemList<Itm>.main {
+            if let listView = fastAdapter?.listView {
+                fastAdapter?.notifier.collapse(listView, self, at: index, in: section)
             }
         }
     }
     
     public func toggleExpanded(section: Int = 0, index: Int) {
-        guard let expandable = sections[section].items[index] as? Expandable else {
+        let sectionItems = sections[section].items
+        if sectionItems.count <= index {
+            return
+        }
+        guard let expandable = sectionItems[index] as? Expandable else {
             return
         }
         if expandable.expanded {
@@ -329,27 +269,21 @@ open class ItemList<Itm: Item> {
     }
     
     public func clear() {
-        for (sectionIndex, section) in sections.enumerated() {
-            _clearSection(sectionIndex: sectionIndex, section: section)
+        ItemList<Itm>.main {
+            for (sectionIndex, _) in sections.enumerated() {
+                if let listView = fastAdapter?.listView {
+                    fastAdapter?.notifier.clear(listView, self, section: sectionIndex)
+                }
+            }
         }
     }
     
     public func clear(section: Int) {
         ItemList<Itm>.main {
-            _clearSection(sectionIndex: section, section: self[section])
+            if let listView = fastAdapter?.listView {
+                fastAdapter?.notifier.clear(listView, self, section: section)
+            }
         }
-    }
-    
-    private func _clearSection(sectionIndex: Int, section: Section<Itm>) {
-        section.header = nil
-        let count = section.items.count
-        section.items.removeAll()
-        section.footer = nil
-        var indexPaths = [IndexPath]()
-        for i in 0..<count {
-            indexPaths.append(IndexPath(row: i, section: sectionIndex))
-        }
-        fastAdapter?.notifier.deleteItems(in: sectionIndex, at: indexPaths)
     }
     
     public func getExpandableOffset(section: Int = 0, index: Int) -> Int {

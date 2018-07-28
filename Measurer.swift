@@ -15,6 +15,16 @@ open class Measurer<Itm: Item> {
         self.interceptor = interceptor ?? MeasurerDefaults.defaultInterceptor
     }
     
+    open func measureItems(items: [Itm]) -> [Itm] {
+        var measuredItems = [Itm]()
+        for item in items {
+            if measureItem(item: item) {
+                measuredItems.append(item)
+            }
+        }
+        return measuredItems
+    }
+    
     open func measureItem(item: Itm) -> Bool {
         guard let collectionView = fastAdapter?.listView else {
             return false

@@ -19,13 +19,7 @@ public extension FastAdapter {
 }
 
 public class FastAdapter<Itm: Item> {
-    let backgroundLayoutQueue: OperationQueue = {
-        let queue = OperationQueue()
-        queue.name = String(describing: FastAdapter.self)
-        queue.maxConcurrentOperationCount = 1
-        queue.qualityOfService = .userInitiated
-        return queue
-    }()
+    public let backgroundLayoutQueue: OperationQueue
     public var dataProvider: DataProvider<Itm> {
         didSet {
             dataProvider.fastAdapter = self
@@ -63,7 +57,9 @@ public class FastAdapter<Itm: Item> {
     public init(dataProvider: DataProvider<Itm> = DataProvider<Itm>(),
                 typeInstanceCache: TypeInstanceCache<Itm> = TypeInstanceCache<Itm>(),
                 measurer: Measurer<Itm> = Measurer<Itm>(),
-                notifier: Notifier<Itm> = Notifier<Itm>()) {
+                notifier: Notifier<Itm> = Notifier<Itm>(),
+                backgroundLayoutQueue: OperationQueue = DefaultLayoutQueue()) {
+        self.backgroundLayoutQueue = backgroundLayoutQueue
         self.dataProvider = dataProvider
         self.typeInstanceCache = typeInstanceCache
         self.measurer = measurer

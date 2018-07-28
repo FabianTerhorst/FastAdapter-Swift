@@ -16,7 +16,17 @@ public class TypeInstanceCache<Itm: Item> {
     public init() {
     }
     
-    func register(item: Itm) -> Bool {
+    public func register(items: [Itm]) -> Bool {
+        var allRegistered = true
+        for item in items {
+            if !register(item: item) {
+                allRegistered = false
+            }
+        }
+        return allRegistered
+    }
+    
+    public func register(item: Itm) -> Bool {
         let typeId = item.getType()
         if typeInstances.index(forKey: typeId) == nil {
             typeInstances[typeId] = item
@@ -26,7 +36,7 @@ public class TypeInstanceCache<Itm: Item> {
         return false
     }
     
-    func register(item: Itm, forSupplementaryViewOfKind: String) -> Bool {
+    public func register(item: Itm, forSupplementaryViewOfKind: String) -> Bool {
         let typeId = item.getType()
         let typeInstances = supplementaryViewTypeInstances[forSupplementaryViewOfKind]
         if typeInstances == nil {
@@ -45,7 +55,7 @@ public class TypeInstanceCache<Itm: Item> {
             if let nib = item.getNib() {
                 listView.registerCell(nib, forCellWithReuseIdentifier: typeId)
             } else {
-                listView.registerCell(item.getCell(), forCellWithReuseIdentifier: typeId)
+                listView.registerCell(item.getViewClass(), forCellWithReuseIdentifier: typeId)
             }
         }
     }
@@ -55,7 +65,7 @@ public class TypeInstanceCache<Itm: Item> {
             if let nib = item.getNib() {
                 listView.registerCell(nib, forSupplementaryViewOfKind: forSupplementaryViewOfKind, withReuseIdentifier: typeId)
             } else {
-                listView.registerCell(item.getCell(), forSupplementaryViewOfKind: forSupplementaryViewOfKind, withReuseIdentifier: typeId)
+                listView.registerCell(item.getViewClass(), forSupplementaryViewOfKind: forSupplementaryViewOfKind, withReuseIdentifier: typeId)
             }
         }
     }
@@ -70,17 +80,17 @@ public class TypeInstanceCache<Itm: Item> {
     }
     
     func renew() {
-        //var registeredCells = fastAdapter?.listView?.registeredCells
+        var registeredCells = fastAdapter?.listView?.registeredCells
         for (typeId, item) in typeInstances {
-            //if registeredCells == nil || registeredCells?.contains(typeId) == false {
-            //    if registeredCells == nil {
-            //        registeredCells = Set<String>()
-            //    }
-            //    registeredCells?.insert(typeId)
+            if registeredCells == nil || registeredCells?.contains(typeId) == false {
+                if registeredCells == nil {
+                    registeredCells = Set<String>()
+                }
+                registeredCells?.insert(typeId)
                 _register(typeId: typeId, item: item)
-            //}
+            }
         }
-        //fastAdapter?.listView?.registeredCells = registeredCells
+        fastAdapter?.listView?.registeredCells = registeredCells
         for (kind, typeInstances) in supplementaryViewTypeInstances {
             for (typeId, item) in typeInstances {
                 _register(typeId: typeId, item: item, forSupplementaryViewOfKind: kind)

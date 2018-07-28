@@ -84,6 +84,14 @@ public class ModelAdapter<Model, Itm: Item>: Adapter<Itm> {
         itemList.clear(section: section)
     }
     
+    public func addSection(_ section: Section<Itm>, at sectionIndex: Int) {
+        itemList.addSection(section, at: sectionIndex)
+    }
+    
+    public func deleteSection(at section: Int) {
+        itemList.deleteSection(at: section)
+    }
+    
     public func getSections() -> [Section<Itm>] {
         return itemList.sections
     }

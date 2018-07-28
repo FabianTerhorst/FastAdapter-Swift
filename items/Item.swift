@@ -14,8 +14,8 @@ open class Item {
         return String(describing: type(of: self))
     }
     
-    open func getCell() -> AnyClass {
-        return UICollectionViewCell.self
+    open func getViewClass() -> AnyClass? {
+        return nil
     }
     
     open func getNib() -> UINib? {

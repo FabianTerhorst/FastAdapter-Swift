@@ -48,6 +48,10 @@ open class Notifier<Itm: Item> {
     }
     
     private func _insert(_ listView: ListView, _ itemList: ItemList<Itm>, items: [Itm], at index: Int, in section: Int) {
+        // Check if list is to short
+        if itemList[section].items.count <= index - 1 {
+            return
+        }
         var indexPaths = [IndexPath]()
         itemList[section].items.insert(contentsOf: items, at: index)
         for i in index..<index + items.count {
@@ -136,6 +140,12 @@ open class Notifier<Itm: Item> {
         if measuredSubItemsCount == 0 {
             return
         }
+        
+        // When list got unexpected shorter then the item index to expand stop expanding
+        if itemList.sections[section].items.count <= index {
+            return
+        }
+        
         if itemList.subItemCount[section] == nil {
             itemList.subItemCount[section] = [Int : Int]()
         } else {

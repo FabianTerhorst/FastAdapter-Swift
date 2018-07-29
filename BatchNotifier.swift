@@ -42,7 +42,6 @@ public class BatchNotifier<Itm: Item>: Notifier<Itm> {
         case insertSection(ListView, ItemList<Itm>, Section<Itm>, Int)
         case deleteSection(ListView, ItemList<Itm>, Int)
         case reloadItems(ListView, [IndexPath])
-        case deleteItems(ListView, [IndexPath])
         case insertItems(ListView, [IndexPath])
         case insert(ListView, ItemList<Itm>, [Itm], Int, Int)
         case delete(ListView, ItemList<Itm>, Int, Int, Int)
@@ -87,13 +86,6 @@ public class BatchNotifier<Itm: Item>: Notifier<Itm> {
             return
         }
         addToBatchUpdate(.reloadItems(listView, indexPaths))
-    }
-    
-    override public func deleteItems(in section: Int, at indexPaths: [IndexPath]) {
-        guard let listView = fastAdapter?.listView else {
-            return
-        }
-        addToBatchUpdate(.deleteItems(listView, indexPaths))
     }
     
     public override func insertItems(at indexPaths: [IndexPath]) {
@@ -179,8 +171,6 @@ public class BatchNotifier<Itm: Item>: Notifier<Itm> {
             listView.insertSections(sections)
         case .reloadItems(let listView, let indexPaths):
             listView.reloadItems(at: indexPaths)
-        case .deleteItems(let listView, let indexPaths):
-            listView.deleteItems(at: indexPaths)
         case .insertItems(let listView, let indexPaths):
             listView.insertItems(at: indexPaths)
         case .insertSection(let listView, let itemList, let section, let sectionIndex):

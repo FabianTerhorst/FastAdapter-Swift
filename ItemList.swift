@@ -223,12 +223,17 @@ open class ItemList<Itm: Item> {
     
     public func expand(section: Int = 0, index: Int) {
         let frame = getFrame()
+        let sectionItems = self[section].items
+        if sectionItems.count <= index {
+            return
+        }
+        let item = sectionItems[index]
         addOperation {
             [weak self] in
             guard let fastAdapter = self?.fastAdapter else {
                 return
             }
-            guard let measuredSubItems = (self?.sections[section].items[index] as? Expandable)?.getMeasuredSubItems(measurer: fastAdapter.measurer, width: frame?.width, height: frame?.height), measuredSubItems.count > 0 else {
+            guard let measuredSubItems = (item as? Expandable)?.getMeasuredSubItems(measurer: fastAdapter.measurer, width: frame?.width, height: frame?.height), measuredSubItems.count > 0 else {
                 return
             }
             ItemList<Itm>.main {

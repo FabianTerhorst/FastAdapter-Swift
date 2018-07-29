@@ -33,18 +33,6 @@ open class Notifier<Itm: Item> {
         fastAdapter?.listView?.insertSections(sections)
     }
     
-    open func deleteItems(in section: Int, at indexPaths: [IndexPath]) {
-        guard let listView = fastAdapter?.listView else {
-            return
-        }
-        listView.performListViewBatchUpdates({
-            listView.deleteItems(at: indexPaths)
-        }, completion: {
-            finished in
-            listView.reloadSections(IndexSet(integer: section))
-        })
-    }
-    
     open func insert(_ listView: ListView, _ itemList: ItemList<Itm>, section: Section<Itm>, at sectionIndex: Int) {
         itemList.sections.insert(Section<Itm>(header: nil, items: [Itm](), footer: nil), at: sectionIndex)
         listView.insertSections(IndexSet(integer: sectionIndex))
@@ -61,16 +49,9 @@ open class Notifier<Itm: Item> {
     
     private func _insert(_ listView: ListView, _ itemList: ItemList<Itm>, items: [Itm], at index: Int, in section: Int) {
         var indexPaths = [IndexPath]()
-        var index = index
-        for item in items {
-            if itemList[section].items.count <= index {
-                itemList[section].items.append(item)
-                indexPaths.append(IndexPath(row: itemList[section].items.count - 1, section: section))
-            } else {
-                itemList[section].items.insert(item, at: index)
-                indexPaths.append(IndexPath(row: index, section: section))
-            }
-            index += 1
+        itemList[section].items.insert(contentsOf: items, at: index)
+        for i in index..<index + items.count {
+            indexPaths.append(IndexPath(row: i, section: section))
         }
         listView.insertItems(at: indexPaths)
     }
@@ -191,6 +172,12 @@ open class Notifier<Itm: Item> {
                 count += subItemCount
             }
         }
+        
+        // Prevent the _delete to return without correcting the subItemCount
+        if itemList[section].items.count <= index + count {
+            return
+        }
+        
         // Count all keys down that are higher then the current index
         if let keys = itemList.subItemCount[section]?.keys {
             for key in keys {

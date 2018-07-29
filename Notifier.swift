@@ -77,12 +77,15 @@ open class Notifier<Itm: Item> {
     }
     
     open func update(_ listView: ListView, _ itemList: ItemList<Itm>, at index: Int, in section: Int) {
-         listView.reloadItems(at: [IndexPath(row: index, section: section)])
+        if itemList[section].items.count <= index {
+            return
+        }
+        listView.reloadItems(at: [IndexPath(row: index, section: section)])
     }
     
-    open func updateAll(_ listView: ListView, _ itemList: ItemList<Itm>, count: Int, in section: Int) {
+    open func updateAll(_ listView: ListView, _ itemList: ItemList<Itm>, in section: Int) {
         var indexPaths = [IndexPath]()
-        for i in 0..<count {
+        for i in 0..<itemList[section].items.count {
             indexPaths.append(IndexPath(row: i, section: section))
         }
         listView.reloadItems(at: indexPaths)

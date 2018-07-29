@@ -46,7 +46,7 @@ public class BatchNotifier<Itm: Item>: Notifier<Itm> {
         case insert(ListView, ItemList<Itm>, [Itm], Int, Int)
         case delete(ListView, ItemList<Itm>, Int, Int, Int)
         case update(ListView, ItemList<Itm>, Int, Int)
-        case updateAll(ListView, ItemList<Itm>, Int, Int)
+        case updateAll(ListView, ItemList<Itm>, Int)
         case clearSection(ListView, ItemList<Itm>, Int)
         case set(ListView, ItemList<Itm>, [Itm], Int)
         case setItem(ListView, ItemList<Itm>, Itm, Int, Int)
@@ -115,8 +115,8 @@ public class BatchNotifier<Itm: Item>: Notifier<Itm> {
         addToBatchUpdate(.update(listView, itemList, index, section))
     }
     
-    public override func updateAll(_ listView: ListView, _ itemList: ItemList<Itm>, count: Int, in section: Int) {
-        addToBatchUpdate(.updateAll(listView, itemList, count, section))
+    public override func updateAll(_ listView: ListView, _ itemList: ItemList<Itm>, in section: Int) {
+        addToBatchUpdate(.updateAll(listView, itemList, section))
     }
     
     public override func clear(_ listView: ListView, _ itemList: ItemList<Itm>, section: Int) {
@@ -183,8 +183,8 @@ public class BatchNotifier<Itm: Item>: Notifier<Itm> {
             super.delete(listView, itemList, count: count, at: index, in: section)
         case .update(let listView, let itemList, let index, let section):
             super.update(listView, itemList, at: index, in: section)
-        case .updateAll(let listView, let itemList, let count, let section):
-            super.updateAll(listView, itemList, count: count, in: section)
+        case .updateAll(let listView, let itemList, let section):
+            super.updateAll(listView, itemList, in: section)
         case .clearSection(let listView, let itemList, let section):
             super.clear(listView, itemList, section: section)
         case .set(let listView, let itemList, let items, let section):

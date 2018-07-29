@@ -23,7 +23,6 @@
 ### Untested
 - expandable with more then one depth
 - items without using layoutkit
-- table view support
 
 ```swift
 class DeviceItem: ModelLayoutItem<Device> {

@@ -9,7 +9,11 @@
 public protocol ListView: class {
     var frame: CGRect { get }
     
+    var allowsSelection: Bool { get set }
+    
     var allowsMultipleSelection: Bool { get set }
+    
+    var indexPathsForSelectedItems: [IndexPath]? { get }
     
     func setListViewDelegate(delegate: DataProviderWrapper)
     
@@ -44,6 +48,10 @@ public protocol ListView: class {
     func moveItem(at indexPath: IndexPath, to newIndexPath: IndexPath)
     
     func reloadData()
+    
+    func selectItem(at indexPath: IndexPath?,
+                    animated: Bool,
+                    scrollPosition: UICollectionView.ScrollPosition)
     
     func performListViewBatchUpdates(_ updates: (() -> Void)?, completion: ((Bool) -> Void)?)
 }
@@ -87,6 +95,18 @@ extension UICollectionView: ListView {
 }
 
 extension UITableView: ListView {
+    public var indexPathsForSelectedItems: [IndexPath]? {
+        get {
+            if let indexPathsForSelectedRows = indexPathsForSelectedRows {
+                return indexPathsForSelectedRows
+            }
+            if let indexPathForSelectedRow = indexPathForSelectedRow {
+                return [indexPathForSelectedRow]
+            }
+            return nil
+        }
+    }
+    
     public func setListViewDelegate(delegate: DataProviderWrapper) {
         self.delegate = delegate
     }
@@ -145,6 +165,23 @@ extension UITableView: ListView {
     
     public func moveItem(at indexPath: IndexPath, to newIndexPath: IndexPath) {
         moveRow(at: indexPath, to: indexPath)
+    }
+    
+    public func selectItem(at indexPath: IndexPath?, animated: Bool, scrollPosition: UICollectionView.ScrollPosition) {
+        let tableViewScrollPosition: UITableView.ScrollPosition
+        switch scrollPosition {
+        case .top:
+            tableViewScrollPosition = .top
+        case .bottom:
+            tableViewScrollPosition = .bottom
+        case .centeredVertically:
+            tableViewScrollPosition = .middle
+        case .left, .right, .centeredHorizontally:
+            tableViewScrollPosition = .none
+        default:
+            tableViewScrollPosition = .none
+        }
+        selectRow(at: indexPath, animated: animated, scrollPosition: tableViewScrollPosition)
     }
     
     public func performListViewBatchUpdates(_ updates: (() -> Void)?, completion: ((Bool) -> Void)?) {

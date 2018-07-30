@@ -53,6 +53,8 @@ public protocol ListView: class {
                     animated: Bool,
                     scrollPosition: UICollectionView.ScrollPosition)
     
+    func indexPath(for cell: ListViewCell) -> IndexPath?
+    
     func performListViewBatchUpdates(_ updates: (() -> Void)?, completion: ((Bool) -> Void)?)
 }
 
@@ -87,6 +89,13 @@ extension UICollectionView: ListView {
     
     public func dequeueReusableListViewSupplementaryView(ofKind elementKind: String, withReuseIdentifier identifier: String, for indexPath: IndexPath) -> (UIView & ListViewReusableView)? {
         return dequeueReusableSupplementaryView(ofKind: elementKind, withReuseIdentifier: identifier, for: indexPath)
+    }
+    
+    public func indexPath(for cell: ListViewCell) -> IndexPath? {
+        if let cell = cell as? UICollectionViewCell {
+            return indexPath(for: cell)
+        }
+        return nil
     }
     
     public func performListViewBatchUpdates(_ updates: (() -> Void)?, completion: ((Bool) -> Void)?) {
@@ -182,6 +191,13 @@ extension UITableView: ListView {
             tableViewScrollPosition = .none
         }
         selectRow(at: indexPath, animated: animated, scrollPosition: tableViewScrollPosition)
+    }
+    
+    public func indexPath(for cell: ListViewCell) -> IndexPath? {
+        if let cell = cell as? UITableViewCell {
+            return indexPath(for: cell)
+        }
+        return nil
     }
     
     public func performListViewBatchUpdates(_ updates: (() -> Void)?, completion: ((Bool) -> Void)?) {

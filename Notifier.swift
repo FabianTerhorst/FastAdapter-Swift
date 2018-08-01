@@ -18,36 +18,36 @@ open class Notifier<Itm: Item> {
     }
     
     open func reloadSection(section: Int) {
-        fastAdapter?.listView?.reloadSections(IndexSet(integer: section))
+        fastAdapter?.listView?.reloadSections(IndexSet(integer: section), with: .automatic)
     }
     
     open func reloadItems(at indexPaths: [IndexPath]) {
-        fastAdapter?.listView?.reloadItems(at: indexPaths)
+        fastAdapter?.listView?.reloadItems(at: indexPaths, with: .automatic)
     }
     
     open func insertItems(at indexPaths: [IndexPath]) {
-        fastAdapter?.listView?.insertItems(at: indexPaths)
+        fastAdapter?.listView?.insertItems(at: indexPaths, with: .automatic)
     }
     
     open func insertSections(_ sections: IndexSet) {
-        fastAdapter?.listView?.insertSections(sections)
+        fastAdapter?.listView?.insertSections(sections, with: .automatic)
     }
     
     open func insert(_ listView: ListView, _ itemList: ItemList<Itm>, section: Section<Itm>, at sectionIndex: Int) {
         itemList.sections.insert(Section<Itm>(header: nil, items: [Itm](), footer: nil), at: sectionIndex)
-        listView.insertSections(IndexSet(integer: sectionIndex))
+        listView.insertSections(IndexSet(integer: sectionIndex), with: .automatic)
     }
     
     open func delete(_ listView: ListView, _ itemList: ItemList<Itm>, sectionIndex: Int) {
         itemList.sections.remove(at: sectionIndex)
-        listView.deleteSections(IndexSet(integer: sectionIndex))
+        listView.deleteSections(IndexSet(integer: sectionIndex), with: .automatic)
     }
     
     open func insert(_ listView: ListView, _ itemList: ItemList<Itm>, items: [Itm], at index: Int, in section: Int) {
-        _insert(listView, itemList, items: items, at: index, in: section)
+        _insert(listView, itemList, items: items, at: index, in: section, with: .automatic)
     }
     
-    private func _insert(_ listView: ListView, _ itemList: ItemList<Itm>, items: [Itm], at index: Int, in section: Int) {
+    private func _insert(_ listView: ListView, _ itemList: ItemList<Itm>, items: [Itm], at index: Int, in section: Int, with animation: ListViewItemAnimation) {
         // Check if list is to short
         if itemList[section].items.count <= index - 1 {
             return
@@ -57,14 +57,14 @@ open class Notifier<Itm: Item> {
         for i in index..<index + items.count {
             indexPaths.append(IndexPath(row: i, section: section))
         }
-        listView.insertItems(at: indexPaths)
+        listView.insertItems(at: indexPaths, with: animation)
     }
     
     open func delete(_ listView: ListView, _ itemList: ItemList<Itm>, count: Int, at index: Int, in section: Int) {
-        _delete(listView, itemList, count: count, at: index, in: section)
+        _delete(listView, itemList, count: count, at: index, in: section, with: .automatic)
     }
     
-    private func _delete(_ listView: ListView, _ itemList: ItemList<Itm>, count: Int, at index: Int, in section: Int) {
+    private func _delete(_ listView: ListView, _ itemList: ItemList<Itm>, count: Int, at index: Int, in section: Int, with animation: ListViewItemAnimation) {
         if itemList[section].items.count <= index + count - 1 {
             return
         }
@@ -73,14 +73,14 @@ open class Notifier<Itm: Item> {
             indexPaths.append(IndexPath(row: i, section: section))
         }
         itemList[section].items.removeSubrange(index..<index + count)
-        listView.deleteItems(at: indexPaths)
+        listView.deleteItems(at: indexPaths, with: animation)
     }
     
     open func update(_ listView: ListView, _ itemList: ItemList<Itm>, at index: Int, in section: Int) {
         if itemList[section].items.count <= index {
             return
         }
-        listView.reloadItems(at: [IndexPath(row: index, section: section)])
+        listView.reloadItems(at: [IndexPath(row: index, section: section)], with: .automatic)
     }
     
     open func updateAll(_ listView: ListView, _ itemList: ItemList<Itm>, in section: Int) {
@@ -88,7 +88,7 @@ open class Notifier<Itm: Item> {
         for i in 0..<itemList[section].items.count {
             indexPaths.append(IndexPath(row: i, section: section))
         }
-        listView.reloadItems(at: indexPaths)
+        listView.reloadItems(at: indexPaths, with: .automatic)
     }
     
     open func clear(_ listView: ListView, _ itemList: ItemList<Itm>, section: Int) {
@@ -101,23 +101,23 @@ open class Notifier<Itm: Item> {
         for i in 0..<count {
             indexPaths.append(IndexPath(row: i, section: section))
         }
-        listView.deleteItems(at: indexPaths)
+        listView.deleteItems(at: indexPaths, with: .automatic)
         // For header and footer clear we need to reload the complete section
-        listView.reloadSections(IndexSet(integer: section))
+        listView.reloadSections(IndexSet(integer: section), with: .automatic)
     }
     
     open func set(_ listView: ListView, _ itemList: ItemList<Itm>, items: [Itm], in section: Int) {
         itemList[section].items = items
-        listView.reloadSections(IndexSet(integer: section))
+        listView.reloadSections(IndexSet(integer: section), with: .automatic)
     }
     
     open func set(_ listView: ListView, _ itemList: ItemList<Itm>, item: Itm, at index: Int, in section: Int) {
         if itemList[section].items.count <= index {
             itemList[section].items.append(item)
-            listView.reloadItems(at: [IndexPath(row: itemList[section].items.count - 1, section: section)])
+            listView.reloadItems(at: [IndexPath(row: itemList[section].items.count - 1, section: section)], with: .automatic)
         } else {
             itemList[section].items[index] = item
-            listView.reloadItems(at: [IndexPath(row: index, section: section)])
+            listView.reloadItems(at: [IndexPath(row: index, section: section)], with: .automatic)
         }
     }
     
@@ -164,7 +164,7 @@ open class Notifier<Itm: Item> {
             }
         }
         itemList.subItemCount[section]?[index] = measuredSubItemsCount
-        _insert(listView, itemList, items: items, at: index + 1, in: section)
+        _insert(listView, itemList, items: items, at: index + 1, in: section, with: .top)
     }
     
     open func collapse(_ listView: ListView, _ itemList: ItemList<Itm>, at index: Int, in section: Int) {
@@ -203,6 +203,6 @@ open class Notifier<Itm: Item> {
         }
         itemList.subItemCount[section]?.removeValue(forKey: index)
         
-        _delete(listView, itemList, count: count, at: index + 1, in: section)
+        _delete(listView, itemList, count: count, at: index + 1, in: section, with: .top)
     }
 }

@@ -31,19 +31,19 @@ public protocol ListView: class {
     
     func dequeueReusableListViewSupplementaryView(ofKind elementKind: String, withReuseIdentifier identifier: String, for indexPath: IndexPath) -> (UIView & ListViewReusableView)?
     
-    func insertSections(_ sections: IndexSet)
+    func insertSections(_ sections: IndexSet, with animation: ListViewItemAnimation)
     
-    func deleteSections(_ sections: IndexSet)
+    func deleteSections(_ sections: IndexSet, with animation: ListViewItemAnimation)
     
-    func reloadSections(_ sections: IndexSet)
+    func reloadSections(_ sections: IndexSet, with animation: ListViewItemAnimation)
     
     func moveSection(_ section: Int, toSection newSection: Int)
     
-    func insertItems(at indexPaths: [IndexPath])
+    func insertItems(at indexPaths: [IndexPath], with animation: ListViewItemAnimation)
     
-    func deleteItems(at indexPaths: [IndexPath])
+    func deleteItems(at indexPaths: [IndexPath], with animation: ListViewItemAnimation)
     
-    func reloadItems(at indexPaths: [IndexPath])
+    func reloadItems(at indexPaths: [IndexPath], with animation: ListViewItemAnimation)
     
     func moveItem(at indexPath: IndexPath, to newIndexPath: IndexPath)
     
@@ -89,6 +89,30 @@ extension UICollectionView: ListView {
     
     public func dequeueReusableListViewSupplementaryView(ofKind elementKind: String, withReuseIdentifier identifier: String, for indexPath: IndexPath) -> (UIView & ListViewReusableView)? {
         return dequeueReusableSupplementaryView(ofKind: elementKind, withReuseIdentifier: identifier, for: indexPath)
+    }
+    
+    public func insertSections(_ sections: IndexSet, with animation: ListViewItemAnimation) {
+        insertSections(sections)
+    }
+    
+    public func deleteSections(_ sections: IndexSet, with animation: ListViewItemAnimation) {
+        deleteSections(sections)
+    }
+    
+    public func reloadSections(_ sections: IndexSet, with animation: ListViewItemAnimation) {
+        reloadSections(sections)
+    }
+    
+    public func insertItems(at indexPaths: [IndexPath], with animation: ListViewItemAnimation) {
+        insertItems(at: indexPaths)
+    }
+    
+    public func deleteItems(at indexPaths: [IndexPath], with animation: ListViewItemAnimation) {
+        deleteItems(at: indexPaths)
+    }
+    
+    public func reloadItems(at indexPaths: [IndexPath], with animation: ListViewItemAnimation) {
+        reloadItems(at: indexPaths)
     }
     
     public func indexPath(for cell: ListViewCell) -> IndexPath? {
@@ -148,28 +172,28 @@ extension UITableView: ListView {
         return dequeueReusableHeaderFooterView(withIdentifier: identifier)
     }
     
-    public func insertSections(_ sections: IndexSet) {
-        insertSections(sections, with: .automatic)
+    public func insertSections(_ sections: IndexSet, with animation: ListViewItemAnimation) {
+        insertSections(sections, with: animation.toTableViewAnimation())
     }
     
-    public func deleteSections(_ sections: IndexSet) {
-        deleteSections(sections, with: .automatic)
+    public func deleteSections(_ sections: IndexSet, with animation: ListViewItemAnimation) {
+        deleteSections(sections, with: animation.toTableViewAnimation())
     }
     
-    public func reloadSections(_ sections: IndexSet) {
-        reloadSections(sections, with: .automatic)
+    public func reloadSections(_ sections: IndexSet, with animation: ListViewItemAnimation) {
+        reloadSections(sections, with: animation.toTableViewAnimation())
     }
     
-    public func insertItems(at indexPaths: [IndexPath]) {
-        insertRows(at: indexPaths, with: .automatic)
+    public func insertItems(at indexPaths: [IndexPath], with animation: ListViewItemAnimation) {
+        insertRows(at: indexPaths, with: animation.toTableViewAnimation())
     }
     
-    public func deleteItems(at indexPaths: [IndexPath]) {
-        deleteRows(at: indexPaths, with: .automatic)
+    public func deleteItems(at indexPaths: [IndexPath], with animation: ListViewItemAnimation) {
+        deleteRows(at: indexPaths, with: animation.toTableViewAnimation())
     }
     
-    public func reloadItems(at indexPaths: [IndexPath]) {
-        reloadRows(at: indexPaths, with: .automatic)
+    public func reloadItems(at indexPaths: [IndexPath], with animation: ListViewItemAnimation) {
+        reloadRows(at: indexPaths, with: animation.toTableViewAnimation())
     }
     
     public func moveItem(at indexPath: IndexPath, to newIndexPath: IndexPath) {

@@ -166,13 +166,13 @@ public class BatchNotifier<Itm: Item>: Notifier<Itm> {
     private func execute(_ type: NotifierType) {
         switch type {
         case .reloadSection(let listView, let section):
-            listView.reloadSections(IndexSet(integer: section))
+            listView.reloadSections(IndexSet(integer: section), with: .automatic)
         case .insertSections(let listView, let sections):
-            listView.insertSections(sections)
+            listView.insertSections(sections, with: .automatic)
         case .reloadItems(let listView, let indexPaths):
-            listView.reloadItems(at: indexPaths)
+            listView.reloadItems(at: indexPaths, with: .automatic)
         case .insertItems(let listView, let indexPaths):
-            listView.insertItems(at: indexPaths)
+            listView.insertItems(at: indexPaths, with: .automatic)
         case .insertSection(let listView, let itemList, let section, let sectionIndex):
             super.insert(listView, itemList, section: section, at: sectionIndex)
         case .deleteSection(let listView, let itemList, let sectionIndex):

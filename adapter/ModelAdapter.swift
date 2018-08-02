@@ -95,4 +95,17 @@ public class ModelAdapter<Model, Itm: Item>: Adapter<Itm> {
     public func getSections() -> [Section<Itm>] {
         return itemList.sections
     }
+    
+    public func getCopiedSections() -> [Section<Itm>] {
+        var sections = [Section<Itm>]()
+        for section in itemList.sections {
+            let copiedSection = Section(header: section.header, items: section.items, footer: section.footer, supplementaryItems: section.supplementaryItems)
+            copiedSection.items = [Itm]()
+            for item in section.items {
+                copiedSection.items.append(item)
+            }
+            sections.append(copiedSection)
+        }
+        return sections
+    }
 }

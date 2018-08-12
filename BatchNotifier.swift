@@ -34,6 +34,10 @@ public class BatchNotifier<Itm: Item>: Notifier<Itm> {
         public var top: T? {
             return array.last
         }
+        
+        public mutating func clear() {
+            array.removeAll()
+        }
     }
     
     public enum NotifierType {
@@ -52,6 +56,7 @@ public class BatchNotifier<Itm: Item>: Notifier<Itm> {
         case setItem(ListView, ItemList<Itm>, Itm, Int, Int)
         case expand(ListView, ItemList<Itm>, [Itm], Int, Int)
         case reloadData(ListView)
+        case execute(() -> ())
     }
     
     public var animationStack: Stack<NotifierType>
@@ -135,32 +140,50 @@ public class BatchNotifier<Itm: Item>: Notifier<Itm> {
         addToBatchUpdate(.expand(listView, itemList, items, index, section))
     }
     
+    public func execute(execute: @escaping () -> ()) {
+        addToBatchUpdate(.execute(execute))
+    }
+    
     private func addToBatchUpdate(_ type: NotifierType) {
         if animationStack.isEmpty {
-            fastAdapter?.listView?.performListViewBatchUpdates({
-                [weak self] in
-                self?.execute(type)
-                }, completion: {
-                    [weak self] result in
-                    if let type = self?.animationStack.pop() {
-                        self?.executeBatchUpdate(type)
-                    }
-            })
+            executeBatchUpdate(type)
         } else {
             animationStack.push(type)
         }
     }
     
     private func executeBatchUpdate(_ type: NotifierType) {
-        fastAdapter?.listView?.performListViewBatchUpdates({
-            [weak self] in
-            self?.execute(type)
-            }, completion: {
-                [weak self] result in
-                if let type = self?.animationStack.pop() {
-                    self?.executeBatchUpdate(type)
+        if let listView = fastAdapter?.listView {
+            if !Thread.current.isMainThread {
+                DispatchQueue.main.sync {
+                    [weak self] in
+                    listView.performListViewBatchUpdates({
+                        [weak self] in
+                        self?.execute(type)
+                        }, completion: {
+                            [weak self] result in
+                            if let type = self?.animationStack.pop() {
+                                self?.executeBatchUpdate(type)
+                            }
+                    })
                 }
-        })
+            } else {
+                listView.performListViewBatchUpdates({
+                    [weak self] in
+                    self?.execute(type)
+                    }, completion: {
+                        [weak self] result in
+                        if let type = self?.animationStack.pop() {
+                            self?.executeBatchUpdate(type)
+                        }
+                })
+            }
+        } else {
+            execute(type)
+            if let type = animationStack.pop() {
+                executeBatchUpdate(type)
+            }
+        }
     }
     
     private func execute(_ type: NotifierType) {
@@ -195,6 +218,8 @@ public class BatchNotifier<Itm: Item>: Notifier<Itm> {
             super.expand(listView, itemList, items: items, at: index, in: section)
         case .reloadData(let listView):
             super.reloadData(listView: listView)
+        case .execute(let execute):
+            execute()
         }
     }
 }

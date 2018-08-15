@@ -13,6 +13,7 @@
 
 ### TODO
 - auto collapsing for expandable
+- single expanded
 - multi adapter support
 - click listener
 - selectable, selection, multiselection
@@ -89,7 +90,8 @@ itemAdapter.add(SampleItem(name: name, font: font))
 ...
 fastAdapter.adapter = modelAdapter
 ...
-fastAdapter.with(collectionView: collectionView)
+fastAdapter.with(listView: collectionView)
+fastAdapter.with(listView: tableView)
 ...
 modelAdapter.add(Device())
 ```

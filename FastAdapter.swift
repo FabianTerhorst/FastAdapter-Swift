@@ -6,10 +6,6 @@
 //  Copyright © 2018 everHome. All rights reserved.
 //
 
-import class UIKit.UICollectionView
-import struct LayoutKit.LayoutArrangement
-import protocol LayoutKit.Layout
-
 public extension FastAdapter {
     func with(listView: ListView) {
         listView.setListViewDelegate(delegate: dataProvider)

@@ -32,6 +32,16 @@ open class Measurer<Itm: Item> {
         return measureItem(item: item, width: listView.frame.width, height: listView.frame.height)
     }
     
+    open func measureItems(items: [Itm], width: CGFloat?, height: CGFloat?) -> [Itm] {
+        var arrangedItems = [Itm]()
+        for item in items {
+            if self?.fastAdapter?.measurer.measureItem(item: item, width: frame?.width, height: frame?.height) == true {
+                arrangedItems.append(item)
+            }
+        }
+        return arrangedItems
+    }
+    
     open func measureItem(item: Itm, width: CGFloat?, height: CGFloat?) -> Bool {
         if let fastAdapter = fastAdapter as? FastAdapter<Item> {
             item.fastAdapter = fastAdapter

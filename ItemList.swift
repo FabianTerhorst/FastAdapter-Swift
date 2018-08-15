@@ -67,12 +67,7 @@ open class ItemList<Itm: Item> {
         let frame = getFrame()
         addOperation {
             [weak self] in
-            var arrangedItems = [Itm]()
-            for item in items {
-                if self?.fastAdapter?.measurer.measureItem(item: item, width: frame?.width, height: frame?.height) == true {
-                    arrangedItems.append(item)
-                }
-            }
+            let arrangedItems = self?.fastAdapter?.measurer.measureItems(items: items, width: frame?.width, height: frame?.height)
             ItemList<Itm>.main {
                 let _ = self?.fastAdapter?.typeInstanceCache.register(items: arrangedItems)
                 if let itemList = self, let listView = self?.fastAdapter?.listView {
@@ -86,12 +81,7 @@ open class ItemList<Itm: Item> {
         let frame = getFrame()
         addOperation {
             [weak self] in
-            var arrangedItems = [Itm]()
-            for item in items {
-                if self?.fastAdapter?.measurer.measureItem(item: item, width: frame?.width, height: frame?.height) == true {
-                    arrangedItems.append(item)
-                }
-            }
+            let arrangedItems = self?.fastAdapter?.measurer.measureItems(items: items, width: frame?.width, height: frame?.height)
             ItemList<Itm>.main {
                 let _ = self?.fastAdapter?.typeInstanceCache.register(items: arrangedItems)
                 if let itemList = self, let listView = self?.fastAdapter?.listView {
@@ -105,12 +95,7 @@ open class ItemList<Itm: Item> {
         let frame = getFrame()
         addOperation {
             [weak self] in
-            var arrangedItems = [Itm]()
-            for item in items {
-                if self?.fastAdapter?.measurer.measureItem(item: item, width: frame?.width, height: frame?.height) == true {
-                    arrangedItems.append(item)
-                }
-            }
+            let arrangedItems = self?.fastAdapter?.measurer.measureItems(items: items, width: frame?.width, height: frame?.height)
             ItemList<Itm>.main {
                 let _ = self?.fastAdapter?.typeInstanceCache.register(items: arrangedItems)
                 if let itemList = self, let listView = self?.fastAdapter?.listView {

@@ -77,6 +77,9 @@ open class Notifier<Itm: Item> {
     }
     
     open func update(_ listView: ListView, _ itemList: ItemList<Itm>, at index: Int, in section: Int) {
+        if itemList.sections.count <= section {
+            return
+        }
         if itemList[section].items.count <= index {
             return
         }

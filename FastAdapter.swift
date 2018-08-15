@@ -47,6 +47,7 @@ public class FastAdapter<Itm: Item> {
             typeInstanceCache.renew()
         }
     }
+    public var logger: (() -> (String))? = nil
     public let eventHooks = EventHooks<Itm>()
     public var adapter: Adapter<Itm>? {
         didSet {
@@ -57,7 +58,7 @@ public class FastAdapter<Itm: Item> {
     public init(dataProvider: DataProvider<Itm> = DataProvider<Itm>(),
                 typeInstanceCache: TypeInstanceCache<Itm> = TypeInstanceCache<Itm>(),
                 measurer: Measurer<Itm> = Measurer<Itm>(),
-                notifier: Notifier<Itm> = Notifier<Itm>(),
+                notifier: Notifier<Itm> = BatchNotifier<Itm>(),
                 backgroundLayoutQueue: OperationQueue = DefaultLayoutQueue()) {
         self.backgroundLayoutQueue = backgroundLayoutQueue
         self.dataProvider = dataProvider

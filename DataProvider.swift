@@ -13,7 +13,13 @@ open class DataProvider<Itm: Item>: DataProviderWrapper {
     }
     
     private func numberOfItemsInSection(section: Int) -> Int {
-        return fastAdapter?.adapter?.itemList[section].items.count ?? 0
+        guard let sections = fastAdapter?.adapter?.itemList.sections else {
+            return 0
+        }
+        if sections.count <= section {
+            return 0
+        }
+        return sections[section].items.count
     }
     
     private func numberOfSections() -> Int {
@@ -21,23 +27,34 @@ open class DataProvider<Itm: Item>: DataProviderWrapper {
     }
     
     private func cellForItemAt(listView: ListView, indexPath: IndexPath) -> ListViewCell? {
-        if let item = fastAdapter?.adapter?.itemList[indexPath.section].items[indexPath.row] {
-            var cell = listView.dequeueReusableListViewCell(withReuseIdentifier: item.getType(), for: indexPath)
-            item.onBind(indexPath: indexPath, cell: &cell)
-            return cell
+        guard let sections = fastAdapter?.adapter?.itemList.sections else {
+            return nil
         }
-        // Last resort, should never happen
-        if let firstType = fastAdapter?.typeInstanceCache.typeInstances.first {
-            let cell = listView.dequeueReusableListViewCell(withReuseIdentifier: firstType.key, for: indexPath)
-            return cell
+        if sections.count <= indexPath.section {
+            return nil
         }
-        return nil
+        let items = sections[indexPath.section].items
+        if items.count <= indexPath.row {
+            fastAdapter?.logger?("Out of bounds at \(indexPath) in list \(listView)")
+            return nil
+        }
+        let item = items[indexPath.row]
+        var cell = listView.dequeueReusableListViewCell(withReuseIdentifier: item.getType(), for: indexPath)
+        item.onBind(indexPath: indexPath, cell: &cell)
+        return cell
     }
     
     private func viewForSupplementaryElement(listView: ListView, ofKind kind: String, at indexPath: IndexPath) -> (UIView & ListViewReusableView)? {
+        guard let sections = fastAdapter?.adapter?.itemList.sections else {
+            return nil
+        }
+        if sections.count <= indexPath.section {
+            return nil
+        }
+        let section = sections[indexPath.section]
         switch kind {
         case UICollectionElementKindSectionHeader:
-            if let item = fastAdapter?.adapter?.itemList[indexPath.section].header {
+            if let item = section.header {
                 guard var view = listView.dequeueReusableListViewSupplementaryView(ofKind: kind, withReuseIdentifier: item.getType(), for: indexPath) else {
                     return nil
                 }
@@ -45,7 +62,7 @@ open class DataProvider<Itm: Item>: DataProviderWrapper {
                 return view
             }
         case UICollectionElementKindSectionFooter:
-            if let item = fastAdapter?.adapter?.itemList[indexPath.section].footer {
+            if let item = section.footer {
                 guard var view = listView.dequeueReusableListViewSupplementaryView(ofKind: kind, withReuseIdentifier: item.getType(), for: indexPath) else {
                     return nil
                 }
@@ -53,41 +70,133 @@ open class DataProvider<Itm: Item>: DataProviderWrapper {
                 return view
             }
         default:
-            if let item = fastAdapter?.adapter?.itemList[indexPath.section].supplementaryItems?[kind] {
+            if let item = section.supplementaryItems?[kind] {
                 guard var view = listView.dequeueReusableListViewSupplementaryView(ofKind: kind, withReuseIdentifier: item.getType(), for: indexPath) else {
                     return nil
                 }
                 item.onBind(indexPath: indexPath, view: &view)
                 return view
             }
-            assertionFailure("unknown supplementary view kind \(kind)")
-        }
-        // Last resort, should never happen
-        if let firstType = fastAdapter?.typeInstanceCache.supplementaryViewTypeInstances[kind]?.first {
-            let view = listView.dequeueReusableListViewSupplementaryView(ofKind: kind, withReuseIdentifier: firstType.key, for: indexPath)
-            return view
+            fastAdapter?.logger?("unknown supplementary view kind \(kind)")
         }
         return nil
     }
     
     private func sizeForItem(at indexPath: IndexPath) -> CGSize {
-        return fastAdapter?.adapter?.itemList[indexPath.section].items[indexPath.row].getSize() ?? .zero
+        guard let sections = fastAdapter?.adapter?.itemList.sections else {
+            return .zero
+        }
+        if sections.count <= indexPath.section {
+            return .zero
+        }
+        let items = sections[indexPath.section].items
+        if items.count <= indexPath.row {
+            return .zero
+        }
+        return items[indexPath.row].getSize()
     }
     
     private func sizeForHeader(in section: Int) -> CGSize {
-        return fastAdapter?.adapter?.itemList[section].header?.getSize() ?? .zero
+        guard let sections = fastAdapter?.adapter?.itemList.sections else {
+            return .zero
+        }
+        if sections.count <= section {
+            return .zero
+        }
+        return sections[section].header?.getSize() ?? .zero
     }
     
     private func sizeForFooter(in section: Int) -> CGSize {
-        return fastAdapter?.adapter?.itemList[section].footer?.getSize() ?? .zero
+        guard let sections = fastAdapter?.adapter?.itemList.sections else {
+            return .zero
+        }
+        if sections.count <= section {
+            return .zero
+        }
+        return sections[section].footer?.getSize() ?? .zero
     }
     
     private func canMoveItem(at indexPath: IndexPath) -> Bool {
-        return (fastAdapter?.adapter?.itemList[indexPath.section].items[indexPath.row] as? Draggable)?.isDraggable ?? false
+        guard let sections = fastAdapter?.adapter?.itemList.sections else {
+            return false
+        }
+        if sections.count <= indexPath.section {
+            return false
+        }
+        let items = sections[indexPath.section].items
+        if items.count <= indexPath.row {
+            return false
+        }
+        return (items[indexPath.row] as? Draggable)?.isDraggable ?? false
     }
     
     private func move(moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
         fastAdapter?.adapter?.itemList.move(source: sourceIndexPath, destination: destinationIndexPath)
+    }
+    
+    public func shouldSelect(_ listView: ListView, at indexPath: IndexPath) -> Bool {
+        guard let sections = fastAdapter?.adapter?.itemList.sections else {
+            return false
+        }
+        if sections.count <= indexPath.section {
+            return false
+        }
+        let items = sections[indexPath.section].items
+        if items.count <= indexPath.row {
+            return false
+        }
+        if items[indexPath.row].isSelectable == true {
+            /*if let selectedItems = listView.indexPathsForSelectedItems, !listView.allowsMultipleSelection {
+                for indexPath in selectedItems {
+                    updateSelection(listView, at: indexPath, selected: false)
+                }
+            }*/
+            return true
+        }
+        return false
+    }
+    
+    public func shouldDeselect(_ listView: ListView, at indexPath: IndexPath) -> Bool {
+        guard let sections = fastAdapter?.adapter?.itemList.sections else {
+            return false
+        }
+        if sections.count <= indexPath.section {
+            return false
+        }
+        let items = sections[indexPath.section].items
+        if items.count <= indexPath.row {
+            return false
+        }
+        return items[indexPath.row].isSelectable
+    }
+    
+    public func updateSelection(_ listView: ListView, at indexPath: IndexPath, selected: Bool) {
+        guard let sections = fastAdapter?.adapter?.itemList.sections else {
+            return
+        }
+        if sections.count <= indexPath.section {
+            return
+        }
+        let items = sections[indexPath.section].items
+        if items.count <= indexPath.row {
+            return
+        }
+        let item = items[indexPath.row]
+        //TODO: shouldn't the system handle automatic deselection on allowsMultipleSelection = false ?
+        if selected && !listView.allowsMultipleSelection, let sections = fastAdapter?.adapter?.itemList.sections {
+            for (sectionIndex, section) in sections.enumerated() {
+                for (itemIndex, item) in section.items.enumerated() {
+                    if item.isSelected {
+                        updateSelection(listView, at: IndexPath(row: itemIndex, section: sectionIndex), selected: false)
+                    }
+                }
+            }
+        }
+        item.isSelected = selected
+        // Not sure if we should call it always or optional with like updateOnSelector only for layout items
+        if item is LayoutItem {
+            fastAdapter?.adapter?.itemList.update(section: indexPath.section, index: indexPath.row)
+        }
     }
     
     override public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -165,6 +274,44 @@ open class DataProvider<Itm: Item>: DataProviderWrapper {
     public override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
         move(moveItemAt: sourceIndexPath, to: destinationIndexPath)
     }
+    
+    public override func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
+        return shouldSelect(collectionView, at: indexPath)
+    }
+    
+    public override func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        if shouldSelect(tableView, at: indexPath) {
+            return indexPath
+        }
+        return nil
+    }
+    
+    public override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        updateSelection(collectionView, at: indexPath, selected: true)
+    }
+    
+    public override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        updateSelection(tableView, at: indexPath, selected: true)
+    }
+    
+    public override func collectionView(_ collectionView: UICollectionView, shouldDeselectItemAt indexPath: IndexPath) -> Bool {
+        return shouldDeselect(collectionView, at: indexPath)
+    }
+    
+    public override func tableView(_ tableView: UITableView, willDeselectRowAt indexPath: IndexPath) -> IndexPath? {
+        if shouldDeselect(tableView, at: indexPath) {
+            return indexPath
+        }
+        return nil
+    }
+    
+    public override func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+        updateSelection(collectionView, at: indexPath, selected: false)
+    }
+    
+    public override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+        updateSelection(tableView, at: indexPath, selected: false)
+    }
 }
 
 open class DataProviderWrapper: NSObject {
@@ -213,6 +360,22 @@ extension DataProviderWrapper: UICollectionViewDelegateFlowLayout {
     public func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
         
     }
+    
+    public func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
+        return false
+    }
+    
+    public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+    }
+    
+    public func collectionView(_ collectionView: UICollectionView, shouldDeselectItemAt indexPath: IndexPath) -> Bool {
+        return false
+    }
+    
+    public func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+        
+    }
 }
 
 extension DataProviderWrapper: UITableViewDataSource {
@@ -256,5 +419,21 @@ extension DataProviderWrapper: UITableViewDelegate {
     
     public func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         return nil
+    }
+    
+    public func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        return nil
+    }
+    
+    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+    }
+    
+    public func tableView(_ tableView: UITableView, willDeselectRowAt indexPath: IndexPath) -> IndexPath? {
+        return nil
+    }
+    
+    public func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+        
     }
 }

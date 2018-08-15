@@ -9,9 +9,9 @@
 open class Measurer<Itm: Item> {
     public weak var fastAdapter: FastAdapter<Itm>?
     
-    public let interceptor: (CGFloat?, CGFloat?) -> (CGFloat?, CGFloat?, Bool)
+    public let interceptor: (CGFloat?, CGFloat?, ListView?) -> (CGFloat?, CGFloat?, Bool)
     
-    public init(interceptor: ((CGFloat?, CGFloat?) -> (CGFloat?, CGFloat?, Bool))? = nil) {
+    public init(interceptor: ((CGFloat?, CGFloat?, ListView?) -> (CGFloat?, CGFloat?, Bool))? = nil) {
         self.interceptor = interceptor ?? MeasurerDefaults.defaultInterceptor
     }
     
@@ -26,17 +26,17 @@ open class Measurer<Itm: Item> {
     }
     
     open func measureItem(item: Itm) -> Bool {
-        guard let collectionView = fastAdapter?.listView else {
+        guard let listView = fastAdapter?.listView else {
             return false
         }
-        return measureItem(item: item, width: collectionView.frame.width, height: collectionView.frame.height)
+        return measureItem(item: item, width: listView.frame.width, height: listView.frame.height)
     }
     
     open func measureItem(item: Itm, width: CGFloat?, height: CGFloat?) -> Bool {
         if let fastAdapter = fastAdapter as? FastAdapter<Item> {
             item.fastAdapter = fastAdapter
         }
-        let (interceptedWidth, interceptedHeight, keep) = interceptor(width, height)
+        let (interceptedWidth, interceptedHeight, keep) = interceptor(width, height, self.fastAdapter?.listView)
         if !keep {
             return false
         }
@@ -83,7 +83,7 @@ open class Measurer<Itm: Item> {
 
 class MeasurerDefaults {
     public static let defaultInterceptor = {
-        (width: CGFloat?, height: CGFloat?) -> (CGFloat?, CGFloat?, Bool) in
+        (width: CGFloat?, height: CGFloat?, listView: ListView?) -> (CGFloat?, CGFloat?, Bool) in
         return (width, nil, (width == nil && height == nil) ? false : true)
     }
 }

@@ -149,7 +149,7 @@ open class ItemList<Itm: Item> {
             }
             ItemList<Itm>.main {
                 if let itemList = self, let listView = self?.fastAdapter?.listView {
-                    self?.fastAdapter?.notifier.updateAll(listView, itemList, count: items.count, in: section)
+                    self?.fastAdapter?.notifier.updateAll(listView, itemList, in: section)
                 }
             }
         }
@@ -269,6 +269,13 @@ open class ItemList<Itm: Item> {
     }
     
     public func move(source: IndexPath, destination: IndexPath) {
+        if sections.count <= source.section || sections.count <= destination.section {
+            return
+        }
+        let sourceItems = self[source.section].items
+        if self[source.section].items.count <= source.row || self[destination.section].items.count <= destination.row {
+            return
+        }
         let item = self[source.section].items.remove(at: source.row)
         self[destination.section].items.insert(item, at: destination.row)
     }

@@ -35,7 +35,7 @@ open class Measurer<Itm: Item> {
     open func measureItems(items: [Itm], width: CGFloat?, height: CGFloat?) -> [Itm] {
         var arrangedItems = [Itm]()
         for item in items {
-            if self?.fastAdapter?.measurer.measureItem(item: item, width: frame?.width, height: frame?.height) == true {
+            if measureItem(item: item, width: width, height: height) {
                 arrangedItems.append(item)
             }
         }
@@ -54,8 +54,8 @@ open class Measurer<Itm: Item> {
     }
     
     open func renew() {
-        if let collectionview = fastAdapter?.listView {
-            let frame = collectionview.frame
+        if let listView = fastAdapter?.listView {
+            let frame = listView.frame
             if let sections = fastAdapter?.adapter?.itemList.sections {
                 for section in sections {
                     if let header = section.header {

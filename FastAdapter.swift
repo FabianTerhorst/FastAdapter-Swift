@@ -47,7 +47,7 @@ public class FastAdapter<Itm: Item> {
             typeInstanceCache.renew()
         }
     }
-    public var logger: (() -> (String))? = nil
+    public var logger: ((String) -> ())? = nil
     public let eventHooks = EventHooks<Itm>()
     public var adapter: Adapter<Itm>? {
         didSet {

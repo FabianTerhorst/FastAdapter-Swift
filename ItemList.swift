@@ -67,7 +67,9 @@ open class ItemList<Itm: Item> {
         let frame = getFrame()
         addOperation {
             [weak self] in
-            let arrangedItems = self?.fastAdapter?.measurer.measureItems(items: items, width: frame?.width, height: frame?.height)
+            guard let arrangedItems = self?.fastAdapter?.measurer.measureItems(items: items, width: frame?.width, height: frame?.height) else {
+                return
+            }
             ItemList<Itm>.main {
                 let _ = self?.fastAdapter?.typeInstanceCache.register(items: arrangedItems)
                 if let itemList = self, let listView = self?.fastAdapter?.listView {
@@ -81,7 +83,9 @@ open class ItemList<Itm: Item> {
         let frame = getFrame()
         addOperation {
             [weak self] in
-            let arrangedItems = self?.fastAdapter?.measurer.measureItems(items: items, width: frame?.width, height: frame?.height)
+            guard let arrangedItems = self?.fastAdapter?.measurer.measureItems(items: items, width: frame?.width, height: frame?.height) else {
+                return
+            }
             ItemList<Itm>.main {
                 let _ = self?.fastAdapter?.typeInstanceCache.register(items: arrangedItems)
                 if let itemList = self, let listView = self?.fastAdapter?.listView {
@@ -95,7 +99,9 @@ open class ItemList<Itm: Item> {
         let frame = getFrame()
         addOperation {
             [weak self] in
-            let arrangedItems = self?.fastAdapter?.measurer.measureItems(items: items, width: frame?.width, height: frame?.height)
+            guard let arrangedItems = self?.fastAdapter?.measurer.measureItems(items: items, width: frame?.width, height: frame?.height) else {
+                return
+            }
             ItemList<Itm>.main {
                 let _ = self?.fastAdapter?.typeInstanceCache.register(items: arrangedItems)
                 if let itemList = self, let listView = self?.fastAdapter?.listView {
@@ -125,6 +131,9 @@ open class ItemList<Itm: Item> {
     }
     
     public func updateAll(section: Int = 0) {
+        if sections.count <= section {
+            return
+        }
         let frame = getFrame()
         let items = self[section].items
         addOperation {
@@ -257,7 +266,6 @@ open class ItemList<Itm: Item> {
         if sections.count <= source.section || sections.count <= destination.section {
             return
         }
-        let sourceItems = self[source.section].items
         if self[source.section].items.count <= source.row || self[destination.section].items.count <= destination.row {
             return
         }

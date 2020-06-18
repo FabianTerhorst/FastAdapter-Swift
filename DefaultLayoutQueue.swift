@@ -6,6 +6,8 @@
 //  Copyright © 2018 everHome. All rights reserved.
 //
 
+import Foundation
+
 public class DefaultLayoutQueue: OperationQueue {
     public override init() {
         super.init()

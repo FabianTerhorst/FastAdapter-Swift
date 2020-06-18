@@ -6,6 +6,9 @@
 //  Copyright © 2018 everHome. All rights reserved.
 //
 
+import UIKit
+import Foundation
+
 open class ItemList<Itm: Item> {
     weak var fastAdapter: FastAdapter<Itm>?
     
@@ -37,11 +40,14 @@ open class ItemList<Itm: Item> {
         let frame = getFrame()
         addOperation {
             [weak self] in
-            if self?.fastAdapter?.measurer.measureItem(item: item, width: frame?.width, height: frame?.height) == true {
+            guard let instance = self else {
+                return
+            }
+            if instance.fastAdapter?.measurer.measureItem(item: item, width: frame?.width, height: frame?.height) == true {
                 ItemList<Itm>.main {
-                    let _ = self?.fastAdapter?.typeInstanceCache.register(item: item)
-                    if let itemList = self, let listView = self?.fastAdapter?.listView {
-                        self?.fastAdapter?.notifier.insert(listView, itemList, items: [item], at: itemList[section].items.count, in: section)
+                    let _ = instance.fastAdapter?.typeInstanceCache.register(item: item)
+                    if let listView = instance.fastAdapter?.listView {
+                        instance.fastAdapter?.notifier.insert(listView, instance, items: [item], at: instance[section].items.count, in: section)
                     }
                 }
             }
@@ -52,11 +58,14 @@ open class ItemList<Itm: Item> {
         let frame = getFrame()
         addOperation {
             [weak self] in
-            if self?.fastAdapter?.measurer.measureItem(item: item, width: frame?.width, height: frame?.height) == true {
+            guard let instance = self else {
+                return
+            }
+            if instance.fastAdapter?.measurer.measureItem(item: item, width: frame?.width, height: frame?.height) == true {
                 ItemList<Itm>.main {
-                    let _ = self?.fastAdapter?.typeInstanceCache.register(item: item)
-                    if let itemList = self, let listView = self?.fastAdapter?.listView {
-                        self?.fastAdapter?.notifier.insert(listView, itemList, items: [item], at: index, in: section)
+                    let _ = instance.fastAdapter?.typeInstanceCache.register(item: item)
+                    if let listView = instance.fastAdapter?.listView {
+                        instance.fastAdapter?.notifier.insert(listView, instance, items: [item], at: index, in: section)
                     }
                 }
             }
@@ -67,13 +76,16 @@ open class ItemList<Itm: Item> {
         let frame = getFrame()
         addOperation {
             [weak self] in
-            guard let arrangedItems = self?.fastAdapter?.measurer.measureItems(items: items, width: frame?.width, height: frame?.height) else {
+            guard let instance = self else {
+                return
+            }
+            guard let arrangedItems = instance.fastAdapter?.measurer.measureItems(items: items, width: frame?.width, height: frame?.height) else {
                 return
             }
             ItemList<Itm>.main {
-                let _ = self?.fastAdapter?.typeInstanceCache.register(items: arrangedItems)
-                if let itemList = self, let listView = self?.fastAdapter?.listView {
-                    self?.fastAdapter?.notifier.insert(listView, itemList, items: arrangedItems, at: itemList[section].items.count, in: section)
+                let _ = instance.fastAdapter?.typeInstanceCache.register(items: arrangedItems)
+                if let listView = instance.fastAdapter?.listView {
+                    instance.fastAdapter?.notifier.insert(listView, instance, items: arrangedItems, at: instance[section].items.count, in: section)
                 }
             }
         }
@@ -83,13 +95,16 @@ open class ItemList<Itm: Item> {
         let frame = getFrame()
         addOperation {
             [weak self] in
-            guard let arrangedItems = self?.fastAdapter?.measurer.measureItems(items: items, width: frame?.width, height: frame?.height) else {
+            guard let instance = self else {
+                return
+            }
+            guard let arrangedItems = instance.fastAdapter?.measurer.measureItems(items: items, width: frame?.width, height: frame?.height) else {
                 return
             }
             ItemList<Itm>.main {
-                let _ = self?.fastAdapter?.typeInstanceCache.register(items: arrangedItems)
-                if let itemList = self, let listView = self?.fastAdapter?.listView {
-                    self?.fastAdapter?.notifier.insert(listView, itemList, items: arrangedItems, at: index, in: section)
+                let _ = instance.fastAdapter?.typeInstanceCache.register(items: arrangedItems)
+                if let listView = instance.fastAdapter?.listView {
+                    instance.fastAdapter?.notifier.insert(listView, instance, items: arrangedItems, at: index, in: section)
                 }
             }
         }
@@ -99,18 +114,22 @@ open class ItemList<Itm: Item> {
         let frame = getFrame()
         addOperation {
             [weak self] in
-            guard let arrangedItems = self?.fastAdapter?.measurer.measureItems(items: items, width: frame?.width, height: frame?.height) else {
+            guard let instance = self else {
+                return
+            }
+            guard let arrangedItems = instance.fastAdapter?.measurer.measureItems(items: items, width: frame?.width, height: frame?.height) else {
                 return
             }
             ItemList<Itm>.main {
-                let _ = self?.fastAdapter?.typeInstanceCache.register(items: arrangedItems)
-                if let itemList = self, let listView = self?.fastAdapter?.listView {
-                    self?.fastAdapter?.notifier.set(listView, itemList, items: arrangedItems, in: section)
+                let _ = instance.fastAdapter?.typeInstanceCache.register(items: arrangedItems)
+                if let listView = instance.fastAdapter?.listView {
+                    instance.fastAdapter?.notifier.set(listView, instance, items: arrangedItems, in: section)
                 }
             }
         }
     }
     
+    //TODO: add update method for multiple indexpaths
     public func update(section: Int = 0, index: Int) {
         let sectionItems = self[section].items
         if sectionItems.count <= index {
@@ -120,10 +139,16 @@ open class ItemList<Itm: Item> {
         let frame = getFrame()
         addOperation {
             [weak self] in
-                if self?.fastAdapter?.measurer.measureItem(item: item, width: frame?.width, height: frame?.height) == true {
+            guard let instance = self else {
+                return
+            }
+                //TODO: remove when measure didn't worked
+                if instance.fastAdapter?.measurer.measureItem(item: item, width: frame?.width, height: frame?.height) == true {
                 ItemList<Itm>.main {
-                    if let itemList = self, let listView = self?.fastAdapter?.listView {
-                        self?.fastAdapter?.notifier.update(listView, itemList, at: index, in: section)
+                    //TODO: is needed when the item type changes on update
+                    let _ = instance.fastAdapter?.typeInstanceCache.register(item: item) //TODO: maybe not needed?
+                    if let listView = instance.fastAdapter?.listView {
+                        instance.fastAdapter?.notifier.update(listView, instance, at: index, in: section)
                     }
                 }
             }
@@ -138,12 +163,15 @@ open class ItemList<Itm: Item> {
         let items = self[section].items
         addOperation {
             [weak self] in
+            guard let instance = self else {
+                return
+            }
             for item in items {
-                let _ = self?.fastAdapter?.measurer.measureItem(item: item, width: frame?.width, height: frame?.height)
+                let _ = instance.fastAdapter?.measurer.measureItem(item: item, width: frame?.width, height: frame?.height)
             }
             ItemList<Itm>.main {
-                if let itemList = self, let listView = self?.fastAdapter?.listView {
-                    self?.fastAdapter?.notifier.updateAll(listView, itemList, in: section)
+                if let listView = instance.fastAdapter?.listView {
+                    instance.fastAdapter?.notifier.updateAll(listView, instance, in: section)
                 }
             }
         }
@@ -153,11 +181,14 @@ open class ItemList<Itm: Item> {
         let frame = getFrame()
         addOperation {
             [weak self] in
-            if self?.fastAdapter?.measurer.measureItem(item: item, width: frame?.width, height: frame?.height) == true {
+            guard let instance = self else {
+                return
+            }
+            if instance.fastAdapter?.measurer.measureItem(item: item, width: frame?.width, height: frame?.height) == true {
                 ItemList<Itm>.main {
-                    let _ = self?.fastAdapter?.typeInstanceCache.register(item: item)
-                    if let itemList = self, let listView = self?.fastAdapter?.listView {
-                        self?.fastAdapter?.notifier.set(listView, itemList, item: item, at: index, in: section)
+                    let _ = instance.fastAdapter?.typeInstanceCache.register(item: item)
+                    if let listView = instance.fastAdapter?.listView {
+                        instance.fastAdapter?.notifier.set(listView, instance, item: item, at: index, in: section)
                     }
                 }
             }
@@ -174,11 +205,14 @@ open class ItemList<Itm: Item> {
         let frame = getFrame()
         addOperation {
             [weak self] in
-            if self?.fastAdapter?.measurer.measureItem(item: item, width: frame?.width, height: frame?.height) != nil {
+            guard let instance = self else {
+                return
+            }
+            if instance.fastAdapter?.measurer.measureItem(item: item, width: frame?.width, height: frame?.height) != nil {
                 ItemList<Itm>.main {
-                    let _ = self?.fastAdapter?.typeInstanceCache.register(item: item, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader)
-                    self?[section].header = item
-                    self?.fastAdapter?.notifier.reloadSection(section: section)
+                    let _ = instance.fastAdapter?.typeInstanceCache.register(item: item, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader)
+                    instance[section].header = item
+                    instance.fastAdapter?.notifier.reloadSection(section: section)
                 }
             }
         }
@@ -188,11 +222,14 @@ open class ItemList<Itm: Item> {
         let frame = getFrame()
         addOperation {
             [weak self] in
-            if self?.fastAdapter?.measurer.measureItem(item: item, width: frame?.width, height: frame?.height) == true {
+            guard let instance = self else {
+                return
+            }
+            if instance.fastAdapter?.measurer.measureItem(item: item, width: frame?.width, height: frame?.height) == true {
                 ItemList<Itm>.main {
-                    let _ = self?.fastAdapter?.typeInstanceCache.register(item: item, forSupplementaryViewOfKind: UICollectionElementKindSectionFooter)
-                    self?[section].footer = item
-                    self?.fastAdapter?.notifier.reloadSection(section: section)
+                    let _ = instance.fastAdapter?.typeInstanceCache.register(item: item, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter)
+                    instance[section].footer = item
+                    instance.fastAdapter?.notifier.reloadSection(section: section)
                 }
             }
         }
@@ -202,14 +239,17 @@ open class ItemList<Itm: Item> {
         let frame = getFrame()
         addOperation {
             [weak self] in
-            if self?.fastAdapter?.measurer.measureItem(item: item, width: frame?.width, height: frame?.height) == true {
+            guard let instance = self else {
+                return
+            }
+            if instance.fastAdapter?.measurer.measureItem(item: item, width: frame?.width, height: frame?.height) == true {
                 ItemList<Itm>.main {
-                    let _ = self?.fastAdapter?.typeInstanceCache.register(item: item, forSupplementaryViewOfKind: kind)
-                    if self?[section].supplementaryItems == nil {
-                        self?[section].supplementaryItems = [String: Itm]()
+                    let _ = instance.fastAdapter?.typeInstanceCache.register(item: item, forSupplementaryViewOfKind: kind)
+                    if instance[section].supplementaryItems == nil {
+                        instance[section].supplementaryItems = [String: Itm]()
                     }
-                    self?[section].supplementaryItems?[kind] = item
-                    self?.fastAdapter?.notifier.reloadSection(section: section)
+                    instance[section].supplementaryItems?[kind] = item
+                    instance.fastAdapter?.notifier.reloadSection(section: section)
                 }
             }
         }
@@ -224,7 +264,10 @@ open class ItemList<Itm: Item> {
         let item = sectionItems[index]
         addOperation {
             [weak self] in
-            guard let fastAdapter = self?.fastAdapter else {
+            guard let instance = self else {
+                return
+            }
+            guard let fastAdapter = instance.fastAdapter else {
                 return
             }
             guard let measuredSubItems = (item as? Expandable)?.getMeasuredSubItems(measurer: fastAdapter.measurer, width: frame?.width, height: frame?.height), measuredSubItems.count > 0 else {
@@ -232,8 +275,8 @@ open class ItemList<Itm: Item> {
             }
             ItemList<Itm>.main {
                 let _ = fastAdapter.typeInstanceCache.register(items: measuredSubItems)
-                if let itemList = self, let listView = self?.fastAdapter?.listView {
-                    self?.fastAdapter?.notifier.expand(listView, itemList, items: measuredSubItems, at: index, in: section)
+                if let listView = instance.fastAdapter?.listView {
+                    instance.fastAdapter?.notifier.expand(listView, instance, items: measuredSubItems, at: index, in: section)
                 }
             }
         }
@@ -241,8 +284,12 @@ open class ItemList<Itm: Item> {
     
     public func collapse(section: Int = 0, index: Int) {
         ItemList<Itm>.main {
+            [weak self] in
+            guard let instance = self else {
+                return
+            }
             if let listView = fastAdapter?.listView {
-                fastAdapter?.notifier.collapse(listView, self, at: index, in: section)
+                fastAdapter?.notifier.collapse(listView, instance, at: index, in: section)
             }
         }
     }
@@ -275,9 +322,13 @@ open class ItemList<Itm: Item> {
     
     public func clear() {
         ItemList<Itm>.main {
+            [weak self] in
+            guard let instance = self else {
+                return
+            }
             for (sectionIndex, _) in sections.enumerated() {
                 if let listView = fastAdapter?.listView {
-                    fastAdapter?.notifier.clear(listView, self, section: sectionIndex)
+                    fastAdapter?.notifier.clear(listView, instance, section: sectionIndex)
                 }
             }
         }
@@ -285,8 +336,12 @@ open class ItemList<Itm: Item> {
     
     public func clear(section: Int) {
         ItemList<Itm>.main {
+            [weak self] in
+            guard let instance = self else {
+                return
+            }
             if let listView = fastAdapter?.listView {
-                fastAdapter?.notifier.clear(listView, self, section: section)
+                fastAdapter?.notifier.clear(listView, instance, section: section)
             }
         }
     }

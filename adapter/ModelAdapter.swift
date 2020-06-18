@@ -6,9 +6,11 @@
 //  Copyright © 2018 everHome. All rights reserved.
 //
 
+import Foundation
+
 public class ModelAdapter<Model, Itm: Item>: Adapter<Itm> {
     
-    private let interceptor: (Model) -> (Itm?)
+    public var interceptor: (Model) -> (Itm?)
     
     public init(itemList: ItemList<Itm> = ItemList<Itm>(), interceptor: @escaping (Model) -> (Itm?)) {
         self.interceptor = interceptor
@@ -97,15 +99,22 @@ public class ModelAdapter<Model, Itm: Item>: Adapter<Itm> {
     }
     
     public func getCopiedSections() -> [Section<Itm>] {
-        var sections = [Section<Itm>]()
-        for section in itemList.sections {
-            let copiedSection = Section(header: section.header, items: section.items, footer: section.footer, supplementaryItems: section.supplementaryItems)
-            copiedSection.items = [Itm]()
-            for item in section.items {
-                copiedSection.items.append(item)
+        let copiedSections: () -> ([Section<Itm>]) = {
+            var sections = [Section<Itm>]()
+            for section in self.itemList.sections {
+                let copiedSection = Section(header: section.header, items: section.items, footer: section.footer, supplementaryItems: section.supplementaryItems)
+                copiedSection.items = [Itm]()
+                for item in section.items {
+                    copiedSection.items.append(item)
+                }
+                sections.append(copiedSection)
             }
-            sections.append(copiedSection)
+            return sections
         }
-        return sections
+        if Thread.current.isMainThread {
+            return copiedSections()
+        } else {
+            return DispatchQueue.main.sync(execute: copiedSections)
+        }
     }
 }

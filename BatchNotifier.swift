@@ -6,6 +6,8 @@
 //  Copyright © 2018 everHome. All rights reserved.
 //
 
+import Foundation
+
 public class BatchNotifier<Itm: Item>: Notifier<Itm> {
     
     public struct Stack<T> {
@@ -52,7 +54,7 @@ public class BatchNotifier<Itm: Item>: Notifier<Itm> {
         case update(ListView, ItemList<Itm>, Int, Int)
         case updateAll(ListView, ItemList<Itm>, Int)
         case clearSection(ListView, ItemList<Itm>, Int)
-        case set(ListView, ItemList<Itm>, [Itm], Int)
+        case set(ListView?, ItemList<Itm>, [Itm], Int)
         case setItem(ListView, ItemList<Itm>, Itm, Int, Int)
         case expand(ListView, ItemList<Itm>, [Itm], Int, Int)
         case reloadData(ListView)
@@ -128,7 +130,7 @@ public class BatchNotifier<Itm: Item>: Notifier<Itm> {
         addToBatchUpdate(.clearSection(listView, itemList, section))
     }
     
-    public override func set(_ listView: ListView, _ itemList: ItemList<Itm>, items: [Itm], in section: Int) {
+    public override func set(_ listView: ListView?, _ itemList: ItemList<Itm>, items: [Itm], in section: Int) {
         addToBatchUpdate(.set(listView, itemList, items, section))
     }
     

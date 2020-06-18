@@ -6,9 +6,15 @@
 //  Copyright © 2018 everHome. All rights reserved.
 //
 
+import UIKit
+
 open class Item {
     
     public weak var fastAdapter: FastAdapter<Item>?
+    
+    open var isSelected: Bool = false
+    
+    open var isSelectable: Bool = false
     
     open func getType() -> String {
         return String(describing: type(of: self))

@@ -6,8 +6,9 @@
 //  Copyright © 2018 everHome. All rights reserved.
 //
 
-import struct LayoutKit.LayoutArrangement
-import protocol LayoutKit.Layout
+import LayoutKit
+import UIKit
+import CoreGraphics
 
 open class LayoutItem: Item {
     
@@ -18,12 +19,18 @@ open class LayoutItem: Item {
     
     open override func onBind(indexPath: IndexPath, cell: inout ListViewCell) {
         super.onBind(indexPath: indexPath, cell: &cell)
-        arrangement?.makeViews(in: cell.contentView)
+        if let arrangement = arrangement {
+            arrangement.makeViews(in: cell.contentView)
+        }
+        cell.layer.shouldRasterize = true
+        cell.layer.rasterizationScale = UIScreen.main.scale
     }
     
     open override func onBind(indexPath: IndexPath, view: inout (UIView & ListViewReusableView)) {
         super.onBind(indexPath: indexPath, view: &view)
-        arrangement?.makeViews(in: view)
+        if let arrangement = arrangement {
+            arrangement.makeViews(in: view)
+        }
     }
     
     open func getLayout() -> Layout? {

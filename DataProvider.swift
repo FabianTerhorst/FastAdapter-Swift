@@ -6,6 +6,8 @@
 //  Copyright © 2018 everHome. All rights reserved.
 //
 
+import UIKit
+
 open class DataProvider<Itm: Item>: DataProviderWrapper {
     public weak var fastAdapter: FastAdapter<Itm>?
     
@@ -39,6 +41,10 @@ open class DataProvider<Itm: Item>: DataProviderWrapper {
             return nil
         }
         let item = items[indexPath.row]
+        let registered = fastAdapter?.typeInstanceCache.register(item: item) ?? true // Just to be sure its registered
+        if !registered {
+            fastAdapter?.logger?("Cell at \(indexPath) wasn't registered before in list \(listView)")
+        }
         var cell = listView.dequeueReusableListViewCell(withReuseIdentifier: item.getType(), for: indexPath)
         item.onBind(indexPath: indexPath, cell: &cell)
         return cell
@@ -53,7 +59,7 @@ open class DataProvider<Itm: Item>: DataProviderWrapper {
         }
         let section = sections[indexPath.section]
         switch kind {
-        case UICollectionElementKindSectionHeader:
+        case UICollectionView.elementKindSectionHeader:
             if let item = section.header {
                 guard var view = listView.dequeueReusableListViewSupplementaryView(ofKind: kind, withReuseIdentifier: item.getType(), for: indexPath) else {
                     return nil
@@ -61,7 +67,7 @@ open class DataProvider<Itm: Item>: DataProviderWrapper {
                 item.onBind(indexPath: indexPath, view: &view)
                 return view
             }
-        case UICollectionElementKindSectionFooter:
+        case UICollectionView.elementKindSectionFooter:
             if let item = section.footer {
                 guard var view = listView.dequeueReusableListViewSupplementaryView(ofKind: kind, withReuseIdentifier: item.getType(), for: indexPath) else {
                     return nil
@@ -228,11 +234,11 @@ open class DataProvider<Itm: Item>: DataProviderWrapper {
     }
     
     public override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        return viewForSupplementaryElement(listView: tableView, ofKind: UICollectionElementKindSectionHeader, at: IndexPath(row: 0, section: section))
+        return viewForSupplementaryElement(listView: tableView, ofKind: UICollectionView.elementKindSectionHeader, at: IndexPath(row: 0, section: section))
     }
     
     public override func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        return viewForSupplementaryElement(listView: tableView, ofKind: UICollectionElementKindSectionFooter, at: IndexPath(row: 0, section: section))
+        return viewForSupplementaryElement(listView: tableView, ofKind: UICollectionView.elementKindSectionFooter, at: IndexPath(row: 0, section: section))
     }
     
     override public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
